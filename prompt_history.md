@@ -57,13 +57,11 @@ You are an AI agent specializing in full-stack web development. Your task is to 
     - when accessing the public article page, error occurs "tagsString.split is not a function
 src/lib/utils.ts (96:23) @ extractTags", fix it
 
+## future functions
 
-
-
-
-- future function
-- prompts 
-    - continue working on it, to support user registration with social login like google, consider using logto (https://logto.io/)
+prompts: continue working on it, to implement ...
+- user can see preview of any article with URL when accessing articles
+- user registration with social login like google, consider using logto (https://logto.io/)
 
 
 ## AI Agent useful scripts
