@@ -83,6 +83,9 @@ src/lib/utils.ts (96:23) @ extractTags", fix it
   - continue working on frontend, user can click a button to generate weekly summary, and then review/change content, finally can select to publish or not. 
   - after testing, there is an issue, when click read full digest for weekly sumamry, no respnse, seems not implemented yet, implement and UI test leave it to me
 
+- git log: deployment in Ali Cloud ECS
+- prompts:
+  - need deploy this application in one ECS in Ali Cloud (equivalent to EC2 in AWS), create deployment instruction and script for how-to
 
 ## future functions
 

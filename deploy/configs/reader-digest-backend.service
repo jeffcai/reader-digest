@@ -1,0 +1,45 @@
+# Reader Digest Backend Systemd Service
+[Unit]
+Description=Reader Digest Backend API Server
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=reader-digest
+Group=reader-digest
+WorkingDirectory=/opt/reader-digest/backend
+Environment=PATH=/opt/reader-digest/backend/venv/bin
+Environment=FLASK_ENV=production
+EnvironmentFile=/opt/reader-digest/backend/.env
+ExecStart=/opt/reader-digest/backend/venv/bin/python start_server.py
+Restart=always
+RestartSec=10
+StartLimitInterval=60s
+StartLimitBurst=3
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=reader-digest-backend
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/reader-digest/backend
+ReadWritePaths=/var/log/reader-digest
+ReadOnlyPaths=/etc/ssl
+
+# Resource limits
+LimitNOFILE=1048576
+LimitNPROC=32768
+
+# Health checks
+TimeoutSec=300
+TimeoutStartSec=60
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target
