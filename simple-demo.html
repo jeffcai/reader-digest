@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reader Digest - URL Preview Demo</title>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; 
+            background: #f9fafb; 
+            margin: 0; 
+            padding: 20px; 
+        }
+        .container { max-width: 800px; margin: 0 auto; }
+        .card { 
+            background: white; 
+            border: 1px solid #e5e7eb; 
+            border-radius: 8px; 
+            padding: 20px; 
+            margin-bottom: 20px; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .article-card { margin-bottom: 24px; }
+        .article-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; color: #111827; }
+        .article-meta { color: #6b7280; font-size: 14px; margin-bottom: 12px; }
+        .article-notes { color: #374151; margin-bottom: 12px; line-height: 1.5; }
+        .preview-btn { 
+            color: #2563eb; 
+            text-decoration: none; 
+            font-size: 14px; 
+            cursor: pointer; 
+            border: none;
+            background: none;
+        }
+        .preview-btn:hover { color: #1d4ed8; }
+        .preview-content { 
+            border: 1px solid #e5e7eb; 
+            border-radius: 6px; 
+            background: #f9fafb; 
+            margin-top: 12px; 
+            overflow: hidden;
+        }
+        .preview-image { width: 60px; height: 60px; object-fit: cover; float: left; margin-right: 12px; }
+        .preview-text { overflow: hidden; padding: 12px; }
+        .preview-title { font-weight: 600; color: #111827; margin-bottom: 4px; }
+        .preview-description { color: #6b7280; font-size: 12px; line-height: 1.4; }
+        .tags { margin-top: 12px; }
+        .tag { 
+            background: #f3f4f6; 
+            color: #6b7280; 
+            padding: 4px 8px; 
+            border-radius: 4px; 
+            font-size: 12px; 
+            margin-right: 6px;
+        }
+        .loading { 
+            color: #2563eb; 
+            font-size: 14px; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px;
+        }
+        .spinner { 
+            width: 16px; 
+            height: 16px; 
+            border: 2px solid #e5e7eb; 
+            border-top: 2px solid #2563eb; 
+            border-radius: 50%; 
+            animation: spin 1s linear infinite; 
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .error { color: #dc2626; font-size: 14px; }
+        h1 { color: #111827; margin-bottom: 32px; }
+        h2 { color: #111827; margin-bottom: 16px; font-size: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Reader Digest - URL Preview Demo</h1>
+        
+        <div class="card">
+            <h2>Test URL Preview</h2>
+            <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+                <input 
+                    type="url" 
+                    id="urlInput" 
+                    placeholder="Enter URL to preview (e.g., https://github.com)" 
+                    value="https://github.com"
+                    style="flex: 1; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;"
+                >
+                <button 
+                    onclick="testPreview()" 
+                    style="padding: 8px 16px; background: #2563eb; color: white; border: none; border-radius: 6px; cursor: pointer;"
+                >
+                    Get Preview
+                </button>
+            </div>
+            <div id="testResult"></div>
+        </div>
+
+        <h2>Sample Articles with URL Previews</h2>
+        
+        <div class="card article-card">
+            <div class="article-title">GitHub - Build and ship software</div>
+            <div class="article-meta">Aug 21, 2025 • testuser • github.com</div>
+            <div class="article-notes">This is where I keep all my code projects</div>
+            <button class="preview-btn" onclick="togglePreview('github', 'https://github.com')">🌐 Show Preview</button>
+            <div id="preview-github"></div>
+            <div class="tags">
+                <span class="tag">development</span>
+                <span class="tag">git</span> 
+                <span class="tag">coding</span>
+            </div>
+        </div>
+
+        <div class="card article-card">
+            <div class="article-title">OpenAI GPT-4 Documentation</div>
+            <div class="article-meta">Aug 21, 2025 • testuser • openai.com</div>
+            <div class="article-notes">Very useful for understanding AI capabilities</div>
+            <button class="preview-btn" onclick="togglePreview('openai', 'https://openai.com')">🌐 Show Preview</button>
+            <div id="preview-openai"></div>
+            <div class="tags">
+                <span class="tag">ai</span>
+                <span class="tag">machine-learning</span>
+                <span class="tag">documentation</span>
+            </div>
+        </div>
+
+        <div class="card article-card">
+            <div class="article-title">React Documentation</div>
+            <div class="article-meta">Aug 21, 2025 • testuser • react.dev</div>
+            <div class="article-notes">Essential for frontend development</div>
+            <button class="preview-btn" onclick="togglePreview('react', 'https://react.dev')">🌐 Show Preview</button>
+            <div id="preview-react"></div>
+            <div class="tags">
+                <span class="tag">react</span>
+                <span class="tag">frontend</span>
+                <span class="tag">javascript</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://127.0.0.1:5001/api/v1';
+
+        async function testPreview() {
+            const urlInput = document.getElementById('urlInput');
+            const testResult = document.getElementById('testResult');
+            const url = urlInput.value.trim();
+            
+            if (!url) {
+                alert('Please enter a URL');
+                return;
+            }
+            
+            testResult.innerHTML = '<div class="loading"><div class="spinner"></div><span>Loading preview...</span></div>';
+            
+            try {
+                const response = await fetch(API_BASE + '/articles/preview', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.preview) {
+                    testResult.innerHTML = createPreviewHTML(data.preview);
+                } else {
+                    testResult.innerHTML = '<div class="error">Error: ' + (data.error || 'Failed to load preview') + '</div>';
+                }
+            } catch (error) {
+                testResult.innerHTML = '<div class="error">Network error: ' + error.message + '</div>';
+            }
+        }
+
+        async function togglePreview(id, url) {
+            const container = document.getElementById('preview-' + id);
+            const button = document.querySelector('[onclick="togglePreview(\'' + id + '\', \'' + url + '\')"]');
+            
+            if (container.innerHTML.trim()) {
+                // Hide preview
+                container.innerHTML = '';
+                button.innerHTML = '🌐 Show Preview';
+                return;
+            }
+            
+            // Show loading
+            container.innerHTML = '<div class="loading"><div class="spinner"></div><span>Loading preview...</span></div>';
+            button.innerHTML = '🌐 Loading...';
+            
+            try {
+                const response = await fetch(API_BASE + '/articles/preview', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.preview) {
+                    container.innerHTML = createPreviewHTML(data.preview) + 
+                        '<button onclick="togglePreview(\'' + id + '\', \'' + url + '\')" style="color: #6b7280; font-size: 12px; margin-top: 8px; border: none; background: none; cursor: pointer;">Hide preview</button>';
+                    button.innerHTML = '🌐 Hide Preview';
+                } else {
+                    container.innerHTML = '<div class="error">Error: ' + (data.error || 'Failed to load preview') + '</div>';
+                    button.innerHTML = '🌐 Show Preview';
+                }
+            } catch (error) {
+                container.innerHTML = '<div class="error">Network error: ' + error.message + '</div>';
+                button.innerHTML = '🌐 Show Preview';
+            }
+        }
+
+        function createPreviewHTML(preview) {
+            return '<div class="preview-content">' +
+                (preview.image ? '<img src="' + preview.image + '" class="preview-image" onerror="this.style.display=\'none\'">' : '') +
+                '<div class="preview-text">' +
+                    '<div class="preview-title">' + (preview.title || preview.domain) + '</div>' +
+                    (preview.description ? '<div class="preview-description">' + preview.description + '</div>' : '') +
+                    '<div style="color: #6b7280; font-size: 12px; margin-top: 4px;">' + (preview.site_name || preview.domain) + '</div>' +
+                '</div>' +
+                '<div style="clear: both;"></div>' +
+            '</div>';
+        }
+    </script>
+</body>
+</html>
