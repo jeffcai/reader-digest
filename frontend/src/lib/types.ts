@@ -74,3 +74,12 @@ export interface UsersResponse {
 
 export type ViewMode = 'list' | 'card' | 'magazine';
 export type ViewType = 'public' | 'own';
+
+export interface UrlPreview {
+  url: string;
+  title: string;
+  description: string;
+  image: string;
+  site_name: string;
+  domain: string;
+}

@@ -2,6 +2,7 @@ import React from 'react';
 import { Article } from '@/lib/types';
 import { formatDate, getDomainFromUrl, extractTags, truncateText } from '@/lib/utils';
 import { ExternalLink, Calendar, Tag, User } from 'lucide-react';
+import UrlPreviewCard from './UrlPreviewCard';
 
 interface ArticleCardProps {
   article: Article;
@@ -56,6 +57,12 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, viewMode, onArticleC
               <p className="text-gray-700 mb-3">
                 {truncateText(article.notes, 200)}
               </p>
+            )}
+
+            {article.url && (
+              <div className="mb-3">
+                <UrlPreviewCard url={article.url} />
+              </div>
             )}
 
             {tags.length > 0 && (
@@ -122,6 +129,12 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, viewMode, onArticleC
           <p className="text-gray-700 text-sm mb-3 flex-1">
             {truncateText(article.notes, 120)}
           </p>
+        )}
+
+        {article.url && (
+          <div className="mb-3">
+            <UrlPreviewCard url={article.url} />
+          </div>
         )}
 
         <div className="mt-auto">
@@ -200,6 +213,12 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, viewMode, onArticleC
           <p className="text-gray-700 mb-4 flex-1">
             {truncateText(article.notes, 300)}
           </p>
+        )}
+
+        {article.url && (
+          <div className="mb-4">
+            <UrlPreviewCard url={article.url} />
+          </div>
         )}
 
         {/* Tags */}
