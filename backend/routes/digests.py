@@ -3,6 +3,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from models.models import Digest, User
 from database import db
 from datetime import datetime, timedelta
+from services.weekly_digest_service import WeeklyDigestService
 import json
 
 digests_bp = Blueprint('digests', __name__)
@@ -218,54 +219,48 @@ def delete_digest(digest_id):
 @digests_bp.route('/generate-weekly', methods=['POST'])
 @jwt_required()
 def generate_weekly_digest():
-    """Generate a weekly digest from user's articles (placeholder for AI integration)"""
+    """Generate a weekly digest from user's articles using the template format"""
     try:
         user_id = get_jwt_identity()
-        data = request.get_json()
+        data = request.get_json() or {}
         
-        # Get date range (default to last week)
-        if 'week_start' in data and 'week_end' in data:
-            week_start = datetime.strptime(data['week_start'], '%Y-%m-%d').date()
-            week_end = datetime.strptime(data['week_end'], '%Y-%m-%d').date()
-        else:
-            # Default to last week
-            today = datetime.now().date()
-            days_since_monday = today.weekday()
-            week_start = today - timedelta(days=days_since_monday + 7)
-            week_end = week_start + timedelta(days=6)
+        # Initialize the weekly digest service
+        digest_service = WeeklyDigestService()
         
-        # Get user's articles from that week
-        from models.models import Article
-        articles = Article.query.filter(
-            Article.user_id == user_id,
-            Article.reading_date >= week_start,
-            Article.reading_date <= week_end
-        ).order_by(Article.reading_date).all()
+        # Get parameters from request
+        week_start = data.get('week_start')
+        week_end = data.get('week_end')
+        custom_title = data.get('custom_title')
         
-        if not articles:
-            return jsonify({'error': 'No articles found for the specified week'}), 404
+        # Generate the weekly digest
+        digest_data = digest_service.generate_weekly_digest(
+            user_id=user_id,
+            week_start=week_start,
+            week_end=week_end,
+            custom_title=custom_title
+        )
         
-        # Generate basic digest content (placeholder for AI summarization)
-        title = f"Weekly Digest: {week_start} to {week_end}"
-        content = f"This week I read {len(articles)} articles:\n\n"
+        return jsonify(digest_data), 200
         
-        for article in articles:
-            content += f"**{article.title}** ({article.reading_date})\n"
-            content += f"URL: {article.url}\n"
-            if article.notes:
-                content += f"Notes: {article.notes}\n"
-            content += "\n"
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 404
+    except Exception as e:
+        return jsonify({'error': f'Failed to generate digest: {str(e)}'}), 500
+
+@digests_bp.route('/available-weeks', methods=['GET'])
+@jwt_required()
+def get_available_weeks():
+    """Get available weeks that have articles for the user"""
+    try:
+        user_id = get_jwt_identity()
+        limit = request.args.get('limit', 12, type=int)
         
-        # Basic summary
-        summary = f"A collection of {len(articles)} articles read between {week_start} and {week_end}."
+        digest_service = WeeklyDigestService()
+        available_weeks = digest_service.get_available_weeks(user_id, limit)
         
         return jsonify({
-            'title': title,
-            'content': content,
-            'summary': summary,
-            'week_start': week_start.isoformat(),
-            'week_end': week_end.isoformat(),
-            'articles_count': len(articles)
+            'available_weeks': available_weeks,
+            'total_weeks': len(available_weeks)
         }), 200
         
     except Exception as e:

@@ -58,9 +58,30 @@ You are an AI agent specializing in full-stack web development. Your task is to 
 src/lib/utils.ts (96:23) @ extractTags", fix it
 
 - git log: implement user can see preview of any article with URL
-prompts: 
-- continue working on it, to implement user can see preview of any article with URL when accessing articles, no need to store preview content, instead of crawling the ULR to show preview content or some way else, but do not store ULR preview content, do not test frontend I will test it myself manually and focus on backend unit test
-- continue working on it, to implement user can view preview of article with URL in the public article page by integrating with backend
+- prompts: 
+  - continue working on it, to implement user can see preview of any article with URL when accessing articles, no need to store preview content, instead of crawling the ULR to show preview content or some way else, but do not store ULR preview content, do not test frontend I will test it myself manually and focus on backend unit test
+  - continue working on it, to implement user can view preview of article with URL in the public article page by integrating with backend
+
+- git log: implement user can see preview of any article with URL
+- prompts:
+  - continue working on it, to implement generate weekly summary by aggregating all user created artiles for user review and change its content, and then can select to publish or not, the summary format would be markdown formatted with template like 
+  ```
+  ## <placeholder - title for the week>
+
+  ## All arcitles in past week
+
+  ### <placeholder - article 1>
+
+  [xxx title](xxx url)
+
+  <summary with AI service - latter will be implemented>
+
+  <note taking for the article>
+
+  ### <placeholder - article 2>
+  ```
+  - continue working on frontend, user can click a button to generate weekly summary, and then review/change content, finally can select to publish or not. 
+  - after testing, there is an issue, when click read full digest for weekly sumamry, no respnse, seems not implemented yet, implement and UI test leave it to me
 
 
 ## future functions

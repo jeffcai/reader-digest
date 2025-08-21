@@ -139,7 +139,10 @@ export const digestsAPI = {
   generateWeeklyDigest: (data?: {
     week_start?: string;
     week_end?: string;
+    custom_title?: string;
   }) => api.post('/digests/generate-weekly', data),
+
+  getAvailableWeeks: () => api.get('/digests/available-weeks'),
 };
 
 // Users API

@@ -84,3 +84,22 @@ export interface UrlPreview {
   success: boolean;
   error: string | null;
 }
+
+export interface WeeklyDigestGenerationRequest {
+  week_start?: string;
+  week_end?: string;
+  custom_title?: string;
+}
+
+export interface WeeklyDigestGenerationResponse {
+  content: string;
+  title: string;
+  article_count: number;
+  week_start: string;
+  week_end: string;
+  available_weeks: Array<{
+    week_start: string;
+    week_end: string;
+    article_count: number;
+  }>;
+}

@@ -48,11 +48,19 @@ const Navbar: React.FC<NavbarProps> = ({ className }) => {
                 Public Articles
               </Link>
               <Link
-                href="/digests"
+                href="/public/digests"
                 className="text-gray-900 hover:text-blue-600 px-3 py-2 text-sm font-medium"
               >
-                Weekly Digests
+                Public Digests
               </Link>
+              {user && (
+                <Link
+                  href="/digests"
+                  className="text-gray-900 hover:text-blue-600 px-3 py-2 text-sm font-medium"
+                >
+                  My Digests
+                </Link>
+              )}
             </div>
           </div>
 
@@ -121,6 +129,15 @@ const Navbar: React.FC<NavbarProps> = ({ className }) => {
                         >
                           <Settings className="h-4 w-4 mr-3 text-gray-400" />
                           Admin Dashboard
+                        </Link>
+                        
+                        <Link
+                          href="/digests"
+                          className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          onClick={() => setIsUserMenuOpen(false)}
+                        >
+                          <FileText className="h-4 w-4 mr-3 text-gray-400" />
+                          My Digests
                         </Link>
                         
                         <Link
