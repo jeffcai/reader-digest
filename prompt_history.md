@@ -57,10 +57,15 @@ You are an AI agent specializing in full-stack web development. Your task is to 
     - when accessing the public article page, error occurs "tagsString.split is not a function
 src/lib/utils.ts (96:23) @ extractTags", fix it
 
+- git log: implement user can see preview of any article with URL
+prompts: 
+- continue working on it, to implement user can see preview of any article with URL when accessing articles, no need to store preview content, instead of crawling the ULR to show preview content or some way else, but do not store ULR preview content, do not test frontend I will test it myself manually and focus on backend unit test
+- continue working on it, to implement user can view preview of article with URL in the public article page by integrating with backend
+
+
 ## future functions
 
 prompts: continue working on it, to implement ...
-- user can see preview of any article with URL when accessing articles
 - user registration with social login like google, consider using logto (https://logto.io/)
 
 
@@ -73,4 +78,36 @@ prompts: continue working on it, to implement ...
 - /reader-digest/backend/venv/bin/python app.py
 - curl -s http://localhost:5001/health
 - /reader-digest/frontend && npm run dev
+- crete article:
+```
+curl -s -X POST http://localhost:5001/api/v1/articles \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1NTczNDUzMiwianRpIjoiNmU0MWRjMTUtNTQyYy00ZGVjLTgyZDgtNmQ1YjAwZDhkZTA1IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjMiLCJuYmYiOjE3NTU3MzQ1MzIsImNzcmYiOiJlZjA4OTFhNC01YmMzLTQ5MDMtYWExNy0zYjM3YjczNzhiNGMiLCJleHAiOjE3NTU4MjA5MzJ9.fTbrz1PbzywikopDuumR1c3mShIm8hJ74B32dI7nKKY" \
+  -d '{
+    "title": "Article Preview Feature Demo",
+    "content": "This article demonstrates the new preview functionality where users can view detailed article information either in a modal overlay or on a dedicated page. Features include:\n\n• Modal and page view modes\n• Share functionality with social media integration\n• Copy-to-clipboard URL sharing\n• Responsive design for all devices\n• Full content display with notes and tags\n• Author information and reading date\n• Direct links to original articles\n\nUsers can switch between modal and page preview modes using the toggle in the main interface. The page mode creates shareable URLs that can be bookmarked and shared with others.",
+    "url": "https://github.com/reader-digest/article-preview-demo",
+    "notes": "This is a demo article created to showcase the article preview functionality. The feature allows seamless article viewing and sharing.",
+    "tags": ["demo", "preview", "feature", "ui/ux"],
+    "is_public": true
+  }'
+```
 - 
+```
+ls -la venv/bin/python*
+The issue is that your virtual environment is linked to a Homebrew Python installation which has the "externally-managed-environment" restriction. Let me try a different approach by activating the virtual environment properly and using the virtual environment's pip directly:
+source venv/bin/activate && which python && which pip
+source venv/bin/activate && pip install beautifulsoup4 lxml
+ls -la
+rm -rf venv && python3 -m venv venv
+source venv/bin/activate && which python && pip install beautifulsoup4 lxml
+source venv/bin/activate && pip install -r requirements.txt
+source venv/bin/activate && pip install Flask Flask-SQLAlchemy Flask-CORS Flask-JWT-Extended Flask-Login Flask-WTF python-dotenv requests bcrypt Werkzeug authlib python-jose[cryptography]
+source venv/bin/activate && pip install Flask Flask-SQLAlchemy Flask-CORS Flask-JWT-Extended Flask-Login Flask-WTF python-dotenv requests bcrypt Werkzeug authlib
+source venv/bin/activate && python -m pytest test_url_preview_simple.py -v
+source venv/bin/activate && pip install pytest
+source venv/bin/activate && python -m pytest test_url_preview_simple.py -v
+source venv/bin/activate && python -m pytest test_url_preview.py -v
+source venv/bin/activate && python test_api_manual.py
+source venv/bin/activate && python app.py
+```

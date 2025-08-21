@@ -4,6 +4,7 @@ from models.models import Article, User
 from database import db
 from datetime import datetime
 import json
+from services.url_preview import url_preview_service
 
 articles_bp = Blueprint('articles', __name__)
 
@@ -237,3 +238,22 @@ def delete_article(article_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
+
+@articles_bp.route('/preview-url', methods=['POST'])
+def preview_url():
+    """Get URL preview metadata by crawling the URL"""
+    try:
+        data = request.get_json()
+        
+        if not data or not data.get('url'):
+            return jsonify({'error': 'URL is required'}), 400
+        
+        url = data['url'].strip()
+        
+        # Get preview data from URL preview service
+        preview_data = url_preview_service.get_preview(url)
+        
+        return jsonify(preview_data), 200
+        
+    except Exception as e:
+        return jsonify({'error': f'Preview failed: {str(e)}'}), 500

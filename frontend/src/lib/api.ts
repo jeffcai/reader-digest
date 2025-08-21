@@ -98,6 +98,9 @@ export const articlesAPI = {
   }>) => api.put(`/articles/${id}`, data),
 
   deleteArticle: (id: number) => api.delete(`/articles/${id}`),
+
+  // URL Preview API
+  previewUrl: (url: string) => api.post('/articles/preview-url', { url }),
 };
 
 // Digests API
