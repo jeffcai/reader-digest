@@ -3,6 +3,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from models.models import Article, User
 from database import db
 from datetime import datetime
+from utils.url_preview import get_url_preview
 import json
 
 articles_bp = Blueprint('articles', __name__)
@@ -236,4 +237,33 @@ def delete_article(article_id):
         
     except Exception as e:
         db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+@articles_bp.route('/preview', methods=['POST'])
+def get_article_preview():
+    """Get preview data for a URL without storing it"""
+    try:
+        data = request.get_json()
+        
+        if not data or not data.get('url'):
+            return jsonify({'error': 'URL is required'}), 400
+        
+        url = data['url'].strip()
+        
+        if not url:
+            return jsonify({'error': 'URL cannot be empty'}), 400
+        
+        # Get preview data
+        preview_data = get_url_preview(url)
+        
+        # Check if there was an error
+        if 'error' in preview_data:
+            return jsonify(preview_data), 400
+        
+        return jsonify({
+            'message': 'Preview fetched successfully',
+            'preview': preview_data
+        }), 200
+        
+    except Exception as e:
         return jsonify({'error': str(e)}), 500

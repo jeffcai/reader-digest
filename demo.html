@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reader Digest - URL Preview Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .preview-loading {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-4xl mx-auto py-8 px-4">
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">Reader Digest - URL Preview Demo</h1>
+        
+        <div class="mb-8">
+            <h2 class="text-xl font-semibold mb-4">Test URL Preview</h2>
+            <div class="flex space-x-2 mb-4">
+                <input 
+                    type="url" 
+                    id="urlInput" 
+                    placeholder="Enter URL to preview (e.g., https://github.com)" 
+                    class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value="https://github.com"
+                >
+                <button 
+                    id="previewBtn" 
+                    onclick="getPreview()" 
+                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                    Get Preview
+                </button>
+            </div>
+            <div id="previewResult" class="hidden"></div>
+        </div>
+
+        <div class="mb-8">
+            <h2 class="text-xl font-semibold mb-4">Sample Articles with URL Previews</h2>
+            <div id="articlesContainer" class="space-y-6"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://127.0.0.1:5001/api/v1';
+        
+        // Mock articles data (simulating what would come from the API)
+        const mockArticles = [
+            {
+                id: 1,
+                title: "GitHub - Build and ship software",
+                url: "https://github.com",
+                content: "A great platform for developers",
+                notes: "This is where I keep all my code projects",
+                tags: ["development", "git", "coding"],
+                reading_date: "2025-08-21",
+                author: "testuser"
+            },
+            {
+                id: 2,
+                title: "OpenAI GPT-4 Documentation",
+                url: "https://openai.com",
+                content: "Latest AI model documentation", 
+                notes: "Very useful for understanding AI capabilities",
+                tags: ["ai", "machine-learning", "documentation"],
+                reading_date: "2025-08-21",
+                author: "testuser"
+            },
+            {
+                id: 3,
+                title: "React Documentation",
+                url: "https://react.dev",
+                content: "The library for building user interfaces",
+                notes: "Essential for frontend development", 
+                tags: ["react", "frontend", "javascript"],
+                reading_date: "2025-08-21",
+                author: "testuser"
+            }
+        ];
+
+        async function getPreview() {
+            const urlInput = document.getElementById('urlInput');
+            const previewResult = document.getElementById('previewResult');
+            const url = urlInput.value.trim();
+            
+            if (!url) {
+                alert('Please enter a URL');
+                return;
+            }
+            
+            previewResult.className = 'block border rounded-lg p-4 bg-white';
+            previewResult.innerHTML = `
+                <div class="flex items-center space-x-2 text-blue-600">
+                    <div class="animate-spin h-4 w-4 border-2 border-blue-600 border-t-transparent rounded-full"></div>
+                    <span>Loading preview...</span>
+                </div>
+            `;
+            
+            try {
+                const response = await fetch(\`\${API_BASE}/articles/preview\`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ url })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.preview) {
+                    const preview = data.preview;
+                    previewResult.innerHTML = createPreviewHTML(preview);
+                } else {
+                    previewResult.innerHTML = \`
+                        <div class="text-red-600 text-sm">
+                            Error: \${data.error || 'Failed to load preview'}
+                        </div>
+                    \`;
+                }
+            } catch (error) {
+                previewResult.innerHTML = \`
+                    <div class="text-red-600 text-sm">
+                        Network error: \${error.message}
+                    </div>
+                \`;
+            }
+        }
+
+        function createPreviewHTML(preview) {
+            return \`
+                <div class="flex border rounded-lg overflow-hidden bg-gray-50">
+                    \${preview.image ? \`
+                        <div class="flex-shrink-0 w-24 h-20 bg-gray-200 overflow-hidden">
+                            <img src="\${preview.image}" alt="\${preview.title}" class="w-full h-full object-cover" 
+                                 onerror="this.style.display='none'">
+                        </div>
+                    \` : ''}
+                    <div class="flex-1 p-3 min-w-0">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-sm font-medium text-gray-900 line-clamp-2 mb-1">
+                                    \${preview.title || preview.domain}
+                                </h4>
+                                \${preview.description ? \`
+                                    <p class="text-xs text-gray-600 line-clamp-2 mb-2">
+                                        \${preview.description}
+                                    </p>
+                                \` : ''}
+                                <p class="text-xs text-gray-500">
+                                    \${preview.site_name || preview.domain}
+                                </p>
+                            </div>
+                            <button onclick="window.open('\${preview.url}', '_blank')" 
+                                    class="p-1 text-gray-400 hover:text-blue-600 transition-colors ml-2"
+                                    title="Open URL">
+                                <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            \`;
+        }
+
+        function createArticleHTML(article, showPreview = false) {
+            return \`
+                <div class="bg-white border rounded-lg p-4 hover:shadow-md transition-shadow">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="text-lg font-semibold text-gray-900 flex-1">\${article.title}</h3>
+                        <button onclick="window.open('\${article.url}', '_blank')" 
+                                class="ml-2 p-1 text-gray-400 hover:text-blue-600 transition-colors"
+                                title="Open article">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <div class="flex items-center space-x-2 text-sm text-gray-500 mb-3">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        <span>\${article.reading_date}</span>
+                        <span>•</span>
+                        <span>\${article.author}</span>
+                        <span>•</span>
+                        <span class="text-blue-600">\${new URL(article.url).hostname}</span>
+                    </div>
+                    
+                    \${article.notes ? \`
+                        <p class="text-gray-700 mb-3">\${article.notes}</p>
+                    \` : ''}
+                    
+                    <div class="mb-3">
+                        <div class="url-preview-\${article.id}">
+                            <button onclick="togglePreview(\${article.id}, '\${article.url}')" 
+                                    class="flex items-center space-x-2 text-blue-600 hover:text-blue-800 transition-colors text-sm">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                          d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9"></path>
+                                </svg>
+                                <span>Show Preview</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    \${article.tags && article.tags.length > 0 ? \`
+                        <div class="flex items-center space-x-2">
+                            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                      d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.99 1.99 0 013 12V7a4 4 0 014-4z"></path>
+                            </svg>
+                            <div class="flex flex-wrap gap-1">
+                                \${article.tags.slice(0, 3).map(tag => \`
+                                    <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">\${tag}</span>
+                                \`).join('')}
+                                \${article.tags.length > 3 ? \`
+                                    <span class="text-xs text-gray-500">+\${article.tags.length - 3} more</span>
+                                \` : ''}
+                            </div>
+                        </div>
+                    \` : ''}
+                </div>
+            \`;
+        }
+
+        async function togglePreview(articleId, url) {
+            const container = document.querySelector(\`.url-preview-\${articleId}\`);
+            
+            if (container.querySelector('.preview-content')) {
+                // Hide preview
+                container.innerHTML = \`
+                    <button onclick="togglePreview(\${articleId}, '\${url}')" 
+                            class="flex items-center space-x-2 text-blue-600 hover:text-blue-800 transition-colors text-sm">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                  d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9"></path>
+                        </svg>
+                        <span>Show Preview</span>
+                    </button>
+                \`;
+                return;
+            }
+            
+            // Show loading
+            container.innerHTML = \`
+                <div class="preview-content border rounded-lg p-4 bg-white">
+                    <div class="flex items-center space-x-2 text-blue-600">
+                        <div class="animate-spin h-4 w-4 border-2 border-blue-600 border-t-transparent rounded-full"></div>
+                        <span>Loading preview...</span>
+                    </div>
+                </div>
+            \`;
+            
+            try {
+                const response = await fetch(\`\${API_BASE}/articles/preview\`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ url })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.preview) {
+                    container.innerHTML = \`
+                        <div class="preview-content">
+                            \${createPreviewHTML(data.preview)}
+                            <button onclick="togglePreview(\${articleId}, '\${url}')" 
+                                    class="text-xs text-gray-400 hover:text-gray-600 mt-2">
+                                Hide preview
+                            </button>
+                        </div>
+                    \`;
+                } else {
+                    container.innerHTML = \`
+                        <div class="preview-content border rounded-lg p-4 bg-white">
+                            <div class="text-red-600 text-sm">
+                                Error: \${data.error || 'Failed to load preview'}
+                            </div>
+                            <button onclick="togglePreview(\${articleId}, '\${url}')" 
+                                    class="text-xs text-gray-400 hover:text-gray-600 mt-2">
+                                Hide
+                            </button>
+                        </div>
+                    \`;
+                }
+            } catch (error) {
+                container.innerHTML = \`
+                    <div class="preview-content border rounded-lg p-4 bg-white">
+                        <div class="text-red-600 text-sm">
+                            Network error: \${error.message}
+                        </div>
+                        <button onclick="togglePreview(\${articleId}, '\${url}')" 
+                                class="text-xs text-gray-400 hover:text-gray-600 mt-2">
+                            Hide
+                        </button>
+                    </div>
+                \`;
+            }
+        }
+
+        // Load mock articles on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            const container = document.getElementById('articlesContainer');
+            container.innerHTML = mockArticles.map(article => createArticleHTML(article)).join('');
+        });
+    </script>
+</body>
+</html>
