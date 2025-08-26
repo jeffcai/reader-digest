@@ -5,7 +5,8 @@ import { Article, ViewMode } from '@/lib/types';
 import { articlesAPI } from '@/lib/api';
 import ArticleCard from '@/components/ArticleCard';
 import { getErrorMessage } from '@/lib/utils';
-import { Search, Grid, List, Calendar, Filter } from 'lucide-react';
+import { Search, Grid, List, Calendar, Filter, X } from 'lucide-react';
+import { useDebounce } from '@/hooks/useDebounce';
 
 export default function Home() {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -14,11 +15,22 @@ export default function Home() {
   const [viewMode, setViewMode] = useState<ViewMode>('card');
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [searchInput, setSearchInput] = useState(''); // Local search input state
   const [filters, setFilters] = useState({
     search: '',
     date: '',
     user_id: '',
   });
+
+  // Debounce search input with 500ms delay
+  const debouncedSearch = useDebounce(searchInput, 500);
+
+  // Effect for debounced search
+  useEffect(() => {
+    if (debouncedSearch !== filters.search) {
+      handleFilterChange({ ...filters, search: debouncedSearch });
+    }
+  }, [debouncedSearch]);
 
   useEffect(() => {
     fetchArticles();
@@ -62,6 +74,25 @@ export default function Home() {
     setFilters(newFilters);
     setCurrentPage(1);
     setArticles([]);
+  };
+
+  const handleSearchInputChange = (value: string) => {
+    setSearchInput(value);
+  };
+
+  const handleImmediateSearch = () => {
+    handleFilterChange({ ...filters, search: searchInput });
+  };
+
+  const handleClearSearch = () => {
+    setSearchInput('');
+    handleFilterChange({ ...filters, search: '' });
+  };
+
+  const handleSearchKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleImmediateSearch();
+    }
   };
 
   const getGridClass = () => {
@@ -134,15 +165,40 @@ export default function Home() {
       {/* Filters and View Toggle */}
       <div className="mb-6 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
         <div className="flex flex-col sm:flex-row gap-4 flex-1">
-          <div className="relative">
+          <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <input
               type="text"
               placeholder="Search articles..."
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              value={filters.search}
-              onChange={(e) => handleFilterChange({ ...filters, search: e.target.value })}
+              className="w-full pl-10 pr-20 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              value={searchInput}
+              onChange={(e) => handleSearchInputChange(e.target.value)}
+              onKeyPress={handleSearchKeyPress}
             />
+            <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
+              {searchInput && (
+                <button
+                  onClick={handleClearSearch}
+                  className="p-1 text-gray-400 hover:text-gray-600 rounded"
+                  title="Clear search"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+              <button
+                onClick={handleImmediateSearch}
+                className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors"
+                title="Search now"
+              >
+                Search
+              </button>
+            </div>
+            {/* Search indicator */}
+            {searchInput !== debouncedSearch && searchInput !== '' && (
+              <div className="absolute -bottom-5 left-0 text-xs text-blue-600">
+                Search in progress...
+              </div>
+            )}
           </div>
           
           <div className="relative">
@@ -187,6 +243,22 @@ export default function Home() {
           </button>
         </div>
       </div>
+
+      {/* Search Results Info */}
+      {filters.search && (
+        <div className="mb-4 text-sm text-gray-600">
+          {loading ? (
+            <span className="flex items-center">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
+              Searching for "{filters.search}"...
+            </span>
+          ) : (
+            <span>
+              {articles.length} {articles.length === 1 ? 'result' : 'results'} found for "{filters.search}"
+            </span>
+          )}
+        </div>
+      )}
 
       {/* Articles Grid */}
       {articles.length === 0 ? (

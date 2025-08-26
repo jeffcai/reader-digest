@@ -87,6 +87,11 @@ src/lib/utils.ts (96:23) @ extractTags", fix it
 - prompts:
   - need deploy this application in one ECS in Ali Cloud (equivalent to EC2 in AWS), create deployment instruction and script for how-to
 
+- git log: fix bug for searching public articles with filter condition
+- prompts:
+  - continue working on reader digest, to fix bug when user input in the search box on the public articles page, filter not working well it stoping user input another letter until filter done which is bad user experience, better to have user input all letters then do filter automatically or maybe just add search button
+
+
 ## future functions
 
 prompts: continue working on it, to implement ...
