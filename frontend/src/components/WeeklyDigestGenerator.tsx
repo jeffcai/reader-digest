@@ -165,9 +165,9 @@ export default function WeeklyDigestGenerator({ onDigestGenerated }: WeeklyDiges
             <div>
               {availableWeeks.length > 0 ? (
                 <div className="space-y-2 max-h-48 overflow-y-auto">
-                  {availableWeeks.map((week, index) => (
+                  {availableWeeks.map((week) => (
                     <label
-                      key={index}
+                      key={`${week.week_start}-${week.week_end}`}
                       className={`flex items-center justify-between p-3 border rounded-md cursor-pointer transition-colors ${
                         selectedWeek === week
                           ? 'bg-blue-50 border-blue-300'

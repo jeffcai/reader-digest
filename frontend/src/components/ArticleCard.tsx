@@ -70,9 +70,9 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, viewMode, onArticleC
               <div className="flex items-center space-x-2 mb-2">
                 <Tag className="h-4 w-4 text-gray-400" />
                 <div className="flex flex-wrap gap-1">
-                  {tags.slice(0, 3).map((tag: string, index: number) => (
+                  {tags.slice(0, 3).map((tag: string) => (
                     <span
-                      key={index}
+                      key={`tag-${article.id}-${tag}`}
                       className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded"
                     >
                       {tag}
@@ -149,9 +149,9 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, viewMode, onArticleC
 
           {tags.length > 0 && (
             <div className="flex flex-wrap gap-1">
-              {tags.slice(0, 2).map((tag: string, index: number) => (
+              {tags.slice(0, 2).map((tag: string) => (
                 <span
-                  key={index}
+                  key={`tag-${article.id}-${tag}-list`}
                   className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded"
                 >
                   {tag}
@@ -229,9 +229,9 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, viewMode, onArticleC
           <div className="flex items-center space-x-2 mt-auto">
             <Tag className="h-4 w-4 text-gray-400" />
             <div className="flex flex-wrap gap-1">
-              {tags.map((tag: string, index: number) => (
+              {tags.map((tag: string) => (
                 <span
-                  key={index}
+                  key={`tag-${article.id}-${tag}-magazine`}
                   className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded"
                 >
                   {tag}

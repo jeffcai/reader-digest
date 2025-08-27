@@ -91,6 +91,27 @@ src/lib/utils.ts (96:23) @ extractTags", fix it
 - prompts:
   - continue working on reader digest, to fix bug when user input in the search box on the public articles page, filter not working well it stoping user input another letter until filter done which is bad user experience, better to have user input all letters then do filter automatically or maybe just add search button
 
+- git log: fix bug for publishing digest
+- prompts:
+  - continue working on reader digest, to fix bug when click 'Publish Now' on the digest generation page error as shown below occurs ✅
+```
+Each child in a list should have a unique "key" prop.
+Check the render method of `DigestsPage`. See https://react.dev/link/warning-keys for more information.
+```
+  - still got errors in page after click publish now, continue fixing it ✅
+```
+Each child in a list should have a unique "key" prop.
+Check the render method of `DigestsPage`. See https://react.dev/link/warning-keys for more information.
+src/app/digests/page.tsx (133:19) @ eval
+  131 |               <div className="grid gap-6">
+  132 |                 {digests.map((digest) => (
+> 133 |                   <div
+      |                   ^
+  134 |                     key={digest.id}
+  135 |                     className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
+  136 |                   >
+```
+  - still got same issue, if digest.id is duplicate somewhere or caused by backend service
 
 ## future functions
 

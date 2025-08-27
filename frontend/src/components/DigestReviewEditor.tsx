@@ -68,26 +68,28 @@ export default function DigestReviewEditor({ digestData, onSave, onCancel }: Dig
     return text
       .split('\n')
       .map((line, index) => {
+        const uniqueKey = `line-${index}-${line.slice(0, 10).replace(/[^a-zA-Z0-9]/g, '')}-${line.length}`;
+        
         if (line.startsWith('# ')) {
-          return <h1 key={index} className="text-2xl font-bold mb-4">{line.slice(2)}</h1>;
+          return <h1 key={uniqueKey} className="text-2xl font-bold mb-4">{line.slice(2)}</h1>;
         } else if (line.startsWith('## ')) {
-          return <h2 key={index} className="text-xl font-semibold mb-3 mt-6">{line.slice(3)}</h2>;
+          return <h2 key={uniqueKey} className="text-xl font-semibold mb-3 mt-6">{line.slice(3)}</h2>;
         } else if (line.startsWith('### ')) {
-          return <h3 key={index} className="text-lg font-medium mb-2 mt-4">{line.slice(4)}</h3>;
+          return <h3 key={uniqueKey} className="text-lg font-medium mb-2 mt-4">{line.slice(4)}</h3>;
         } else if (line.startsWith('**') && line.endsWith('**')) {
-          return <p key={index} className="font-semibold mb-1">{line.slice(2, -2)}</p>;
+          return <p key={uniqueKey} className="font-semibold mb-1">{line.slice(2, -2)}</p>;
         } else if (line.startsWith('> ')) {
-          return <blockquote key={index} className="border-l-4 border-gray-300 pl-4 italic text-gray-600 mb-2">{line.slice(2)}</blockquote>;
+          return <blockquote key={uniqueKey} className="border-l-4 border-gray-300 pl-4 italic text-gray-600 mb-2">{line.slice(2)}</blockquote>;
         } else if (line.startsWith('_') && line.endsWith('_')) {
-          return <p key={index} className="italic text-gray-600 mb-2">{line.slice(1, -1)}</p>;
+          return <p key={uniqueKey} className="italic text-gray-600 mb-2">{line.slice(1, -1)}</p>;
         } else if (line.startsWith('`') && line.endsWith('`')) {
-          return <code key={index} className="bg-gray-100 px-1 py-0.5 rounded text-sm">{line.slice(1, -1)}</code>;
+          return <code key={uniqueKey} className="bg-gray-100 px-1 py-0.5 rounded text-sm">{line.slice(1, -1)}</code>;
         } else if (line.trim() === '---') {
-          return <hr key={index} className="my-6 border-gray-300" />;
+          return <hr key={uniqueKey} className="my-6 border-gray-300" />;
         } else if (line.trim()) {
-          return <p key={index} className="mb-2">{line}</p>;
+          return <p key={uniqueKey} className="mb-2">{line}</p>;
         } else {
-          return <br key={index} />;
+          return <br key={uniqueKey} />;
         }
       });
   };

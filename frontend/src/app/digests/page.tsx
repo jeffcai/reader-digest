@@ -30,6 +30,15 @@ export default function DigestsPage() {
     try {
       const response = await digestsAPI.getDigests({ view: 'own' });
       const digestsData = response.data as DigestsResponse;
+      
+      // Debug: Check for duplicate IDs
+      const ids = digestsData.digests.map(d => d.id);
+      const duplicateIds = ids.filter((id, index) => ids.indexOf(id) !== index);
+      if (duplicateIds.length > 0) {
+        console.warn('Duplicate digest IDs found:', duplicateIds);
+      }
+      console.log('Loaded digests:', digestsData.digests.map(d => ({ id: d.id, title: d.title })));
+      
       setDigests(digestsData.digests);
     } catch (error: any) {
       console.error('Failed to load digests:', error);
@@ -129,9 +138,9 @@ export default function DigestsPage() {
               </div>
             ) : digests.length > 0 ? (
               <div className="grid gap-6">
-                {digests.map((digest) => (
+                {digests.map((digest, index) => (
                   <div
-                    key={digest.id}
+                    key={digest.id ? `digest-${digest.id}` : `digest-index-${index}`}
                     className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
                   >
                     <div className="flex items-start justify-between">
@@ -140,17 +149,26 @@ export default function DigestsPage() {
                           <h3 className="text-lg font-medium text-gray-900">{digest.title}</h3>
                           <div className="flex space-x-2">
                             {digest.is_published && (
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                              <span 
+                                key={`published-badge-${digest.id || index}`}
+                                className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800"
+                              >
                                 Published
                               </span>
                             )}
                             {!digest.is_published && (
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                              <span 
+                                key={`draft-badge-${digest.id || index}`}
+                                className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
+                              >
                                 Draft
                               </span>
                             )}
                             {digest.is_public && (
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                              <span 
+                                key={`public-badge-${digest.id || index}`}
+                                className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                              >
                                 Public
                               </span>
                             )}
@@ -162,15 +180,15 @@ export default function DigestsPage() {
                           <span className="mx-2">•</span>
                           📝 Created {formatDate(digest.created_at)}
                           {digest.published_at && (
-                            <>
+                            <React.Fragment key={`published-${digest.id || index}`}>
                               <span className="mx-2">•</span>
                               🚀 Published {formatDate(digest.published_at)}
-                            </>
+                            </React.Fragment>
                           )}
                         </div>
                         
                         {digest.summary && (
-                          <p className="text-gray-700 mb-3">{digest.summary}</p>
+                          <p key={`summary-${digest.id || index}`} className="text-gray-700 mb-3">{digest.summary}</p>
                         )}
                         
                         <div className="flex items-center space-x-4 text-sm">
@@ -181,7 +199,10 @@ export default function DigestsPage() {
                             View Details
                           </button>
                           {!digest.is_published && (
-                            <button className="text-gray-600 hover:text-gray-800 transition-colors">
+                            <button 
+                              key={`edit-button-${digest.id || index}`}
+                              className="text-gray-600 hover:text-gray-800 transition-colors"
+                            >
                               Edit
                             </button>
                           )}

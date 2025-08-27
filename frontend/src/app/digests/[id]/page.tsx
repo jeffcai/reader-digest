@@ -70,18 +70,19 @@ export default function DigestViewPage() {
     
     lines.forEach((line, index) => {
       const trimmedLine = line.trim();
+      const uniqueKey = `digest-line-${index}-${trimmedLine.slice(0, 20).replace(/[^a-zA-Z0-9]/g, '')}-${line.length}`;
       
       if (trimmedLine.startsWith('# ')) {
         // Main heading
         elements.push(
-          <h1 key={index} className="text-3xl font-bold text-gray-900 mb-6 border-b border-gray-200 pb-4">
+          <h1 key={uniqueKey} className="text-3xl font-bold text-gray-900 mb-6 border-b border-gray-200 pb-4">
             {trimmedLine.slice(2)}
           </h1>
         );
       } else if (trimmedLine.startsWith('## ')) {
         // Section heading
         elements.push(
-          <h2 key={index} className="text-2xl font-semibold text-gray-800 mb-4 mt-8">
+          <h2 key={uniqueKey} className="text-2xl font-semibold text-gray-800 mb-4 mt-8">
             {trimmedLine.slice(3)}
           </h2>
         );
@@ -91,7 +92,7 @@ export default function DigestViewPage() {
         if (linkMatch) {
           const [, number, title, url] = linkMatch;
           elements.push(
-            <div key={index} className="mb-6">
+            <div key={uniqueKey} className="mb-6">
               <h3 className="text-xl font-medium text-gray-900 mb-3">
                 {number && <span className="text-blue-600 mr-2">{number}</span>}
                 <a 
@@ -107,7 +108,7 @@ export default function DigestViewPage() {
           );
         } else {
           elements.push(
-            <h3 key={index} className="text-xl font-medium text-gray-900 mb-3">
+            <h3 key={uniqueKey} className="text-xl font-medium text-gray-900 mb-3">
               {trimmedLine.slice(4)}
             </h3>
           );
@@ -116,21 +117,21 @@ export default function DigestViewPage() {
         // Bold metadata lines
         const boldText = trimmedLine.slice(2, -2);
         elements.push(
-          <p key={index} className="font-semibold text-gray-800 mb-2">
+          <p key={uniqueKey} className="font-semibold text-gray-800 mb-2">
             {boldText}
           </p>
         );
       } else if (trimmedLine.startsWith('> ')) {
         // Quote/notes
         elements.push(
-          <blockquote key={index} className="border-l-4 border-blue-200 pl-4 italic text-gray-700 mb-2 bg-blue-50 py-2">
+          <blockquote key={uniqueKey} className="border-l-4 border-blue-200 pl-4 italic text-gray-700 mb-2 bg-blue-50 py-2">
             {trimmedLine.slice(2)}
           </blockquote>
         );
       } else if (trimmedLine.startsWith('_') && trimmedLine.endsWith('_')) {
         // Italic text (AI summaries)
         elements.push(
-          <p key={index} className="italic text-gray-600 bg-gray-50 px-4 py-3 rounded-md mb-3">
+          <p key={uniqueKey} className="italic text-gray-600 bg-gray-50 px-4 py-3 rounded-md mb-3">
             {trimmedLine.slice(1, -1)}
           </p>
         );
@@ -138,30 +139,30 @@ export default function DigestViewPage() {
         // Tags with backticks
         const processedLine = trimmedLine.replace(/`([^`]+)`/g, '<span class="inline-block bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm font-mono mr-1">$1</span>');
         elements.push(
-          <div key={index} className="mb-2" dangerouslySetInnerHTML={{ __html: processedLine }} />
+          <div key={uniqueKey} className="mb-2" dangerouslySetInnerHTML={{ __html: processedLine }} />
         );
       } else if (trimmedLine === '---') {
         // Horizontal rule
         elements.push(
-          <hr key={index} className="my-8 border-gray-300" />
+          <hr key={uniqueKey} className="my-8 border-gray-300" />
         );
       } else if (trimmedLine.startsWith('*') && trimmedLine.endsWith('*')) {
         // Footer text
         elements.push(
-          <p key={index} className="text-sm text-gray-500 italic text-center mt-6">
+          <p key={uniqueKey} className="text-sm text-gray-500 italic text-center mt-6">
             {trimmedLine.slice(1, -1)}
           </p>
         );
       } else if (trimmedLine) {
         // Regular paragraph
         elements.push(
-          <p key={index} className="text-gray-700 mb-3 leading-relaxed">
+          <p key={uniqueKey} className="text-gray-700 mb-3 leading-relaxed">
             {trimmedLine}
           </p>
         );
       } else {
         // Empty line - add spacing
-        elements.push(<div key={index} className="mb-2" />);
+        elements.push(<div key={uniqueKey} className="mb-2" />);
       }
     });
     
