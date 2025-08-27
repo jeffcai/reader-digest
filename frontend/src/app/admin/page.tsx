@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { PlusIcon, PencilIcon, TrashIcon, EyeIcon } from 'lucide-react';
+import Cookies from 'js-cookie';
 
 interface Article {
   id: number;
@@ -40,16 +41,34 @@ export default function AdminPage() {
   const fetchUserArticles = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001'}/api/v1/articles?user_articles=true`, {
+      const token = Cookies.get('access_token');
+      console.log('DEBUG: Fetching user articles with token:', token ? 'Token present' : 'No token');
+      
+      if (!token) {
+        console.log('DEBUG: No token found - redirecting to login');
+        router.push('/login');
+        return;
+      }
+      
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001'}/api/v1/articles?view=own`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('access_token') || document.cookie.replace(/(?:(?:^|.*;\s*)access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1")}`,
+          'Authorization': `Bearer ${token}`,
         },
       });
 
+      console.log('DEBUG: Response status:', response.status);
       if (response.ok) {
         const data = await response.json();
+        console.log('DEBUG: Received articles count:', data.articles?.length || 0);
         setArticles(data.articles || []);
+      } else if (response.status === 401) {
+        console.log('DEBUG: Authentication failed - redirecting to login');
+        router.push('/login');
+        return;
       } else {
+        console.log('DEBUG: Response error:', response.statusText);
+        const errorData = await response.json().catch(() => ({}));
+        console.log('DEBUG: Error data:', errorData);
         setError('Failed to fetch articles');
       }
     } catch (error) {
@@ -69,7 +88,7 @@ export default function AdminPage() {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001'}/api/v1/articles/${articleId}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('access_token') || document.cookie.replace(/(?:(?:^|.*;\s*)access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1")}`,
+          'Authorization': `Bearer ${Cookies.get('access_token')}`,
         },
       });
 

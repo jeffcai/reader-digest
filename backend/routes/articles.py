@@ -15,8 +15,10 @@ def get_articles():
         # Check if user is authenticated
         user_id = None
         try:
+            from flask_jwt_extended import verify_jwt_in_request
+            verify_jwt_in_request(optional=True)
             user_id = get_jwt_identity()
-        except:
+        except Exception as e:
             pass  # Not authenticated, show only public articles
         
         # Query parameters
@@ -26,17 +28,33 @@ def get_articles():
         date_filter = request.args.get('date')  # YYYY-MM-DD format
         tag_filter = request.args.get('tag')
         view_type = request.args.get('view', 'public')  # 'public' or 'own'
-        user_articles = request.args.get('user_articles', type=bool)
+        
+        # Parse user_articles parameter - handle string 'true'/'false' from URL
+        user_articles_param = request.args.get('user_articles', '').lower()
+        user_articles = user_articles_param in ['true', '1', 'yes']
+        
+        print(f"DEBUG: user_articles_param='{user_articles_param}', user_articles={user_articles}, user_id={user_id}, view_type={view_type}")
         
         # Base query
         query = Article.query
         
-        if user_articles and user_id:
+        # Check if requesting user's own articles - requires authentication
+        if view_type == 'own':
+            if not user_id:
+                return jsonify({'error': 'Authentication required for personal articles'}), 401
+            # Convert string user_id to integer for database query
+            try:
+                user_id_int = int(user_id) if isinstance(user_id, str) else user_id
+                query = query.filter_by(user_id=user_id_int)
+            except (ValueError, TypeError):
+                return jsonify({'error': 'Invalid user identity'}), 401
+        elif user_articles and user_id:
             # User's own articles (including private ones) - for admin page
-            query = query.filter_by(user_id=user_id)
-        elif view_type == 'own' and user_id:
-            # User's own articles (including private ones)
-            query = query.filter_by(user_id=user_id)
+            try:
+                user_id_int = int(user_id) if isinstance(user_id, str) else user_id
+                query = query.filter_by(user_id=user_id_int)
+            except (ValueError, TypeError):
+                return jsonify({'error': 'Invalid user identity'}), 401
         else:
             # Public articles only
             query = query.filter_by(is_public=True)

@@ -113,6 +113,11 @@ src/app/digests/page.tsx (133:19) @ eval
 ```
   - still got same issue, if digest.id is duplicate somewhere or caused by backend service
 
+- git log: enhance admin function to only view user own articles instead of view all
+- prompts:
+  - continue working on reader digest, to enhance admin function to only view user own articles instead of view all, currently can view all articles but unable to delete (403 error if trying to delete, this implementation is correct) ✅
+  - not working as a tester I still can view demo_user's articles when accessing my admin dashboard.
+
 ## future functions
 
 prompts: continue working on it, to implement ...

@@ -26,7 +26,8 @@ export default function AdminDigestsPage() {
     try {
       const response = await digestsAPI.getDigests({ 
         page: currentPage,
-        per_page: 20
+        per_page: 20,
+        view: 'own'  // Only show user's own digests in admin view
       });
       const digestsData = response.data as DigestsResponse;
       setDigests(digestsData.digests);
