@@ -120,6 +120,12 @@ src/app/digests/page.tsx (133:19) @ eval
 
 ## future functions
 
+- user can view/edit/delete user own articles in admin console
+- user can view/edit/delete user own digest in admin console
+- super admin can manage all contents including articles and digests
+- user can have chrome extension to add articles with notes input
+- user can bring their own OpenAI compatible API token and URL for AI summary for digest
+
 prompts: continue working on it, to implement ...
 - user registration with social login like google, consider using logto (https://logto.io/)
 
