@@ -118,9 +118,17 @@ src/app/digests/page.tsx (133:19) @ eval
   - continue working on reader digest, to enhance admin function to only view user own articles instead of view all, currently can view all articles but unable to delete (403 error if trying to delete, this implementation is correct) ✅
   - not working as a tester I still can view demo_user's articles when accessing my admin dashboard.
 
+- git log: enhance admin function to enable user view/edit/delete user own articles in admin dashboard
+- prompts:
+  - continue working on reader digest, to enhance admin function to enable user view/edit/delete user own articles in admin dashboard
+  - fix the bug, when trying to update article at frontend, error occurs: '"PUT /api/v1/articles/2 HTTP/1.1" 403' 
+  - can not view article, update frontend to implement it ✅
+  - enhance view article function in admin dashboard, should enable user to back to admin dashboard instead of the page of all public articles ✅
+
+
 ## future functions
 
-- user can view/edit/delete user own articles in admin console
+- user can a markdown editor for article content, and also show content of article by parsing markdown on public article screen
 - user can view/edit/delete user own digest in admin console
 - super admin can manage all contents including articles and digests
 - user can have chrome extension to add articles with notes input

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Article, ViewMode } from '@/lib/types';
 import { articlesAPI } from '@/lib/api';
 import ArticleCard from '@/components/ArticleCard';
@@ -9,6 +10,7 @@ import { Search, Grid, List, Calendar, Filter, X } from 'lucide-react';
 import { useDebounce } from '@/hooks/useDebounce';
 
 export default function Home() {
+  const router = useRouter();
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -277,8 +279,7 @@ export default function Home() {
                 article={article}
                 viewMode={viewMode}
                 onArticleClick={(article) => {
-                  // Handle article click - maybe open in modal or navigate to details
-                  console.log('Article clicked:', article);
+                  router.push(`/articles/${article.id}`);
                 }}
               />
             ))}

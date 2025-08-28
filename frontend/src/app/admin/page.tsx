@@ -308,8 +308,9 @@ export default function AdminPage() {
                         <PencilIcon className="h-4 w-4" />
                       </Link>
                       <Link
-                        href={`/articles/${article.id}`}
+                        href={`/articles/${article.id}?ref=admin`}
                         className="text-gray-600 hover:text-gray-900 inline-flex items-center"
+                        title="View Article"
                       >
                         <EyeIcon className="h-4 w-4" />
                       </Link>

@@ -197,6 +197,14 @@ def update_article(article_id):
     """Update an article"""
     try:
         user_id = get_jwt_identity()
+        
+        # Convert user_id to integer if it's a string (same fix as in create_article)
+        if isinstance(user_id, str):
+            try:
+                user_id = int(user_id)
+            except ValueError:
+                return jsonify({'error': 'Invalid user identity'}), 401
+        
         article = Article.query.get(article_id)
         
         if not article:
@@ -213,10 +221,12 @@ def update_article(article_id):
             article.title = data['title']
         if 'url' in data:
             article.url = data['url']
+        if 'content' in data:
+            article.content = data['content']
         if 'notes' in data:
             article.notes = data['notes']
         if 'tags' in data:
-            article.tags = data['tags']
+            article.tags = json.dumps(data['tags']) if isinstance(data['tags'], list) else data['tags']
         if 'reading_date' in data:
             article.reading_date = datetime.strptime(data['reading_date'], '%Y-%m-%d').date()
         if 'is_public' in data:
@@ -239,6 +249,14 @@ def delete_article(article_id):
     """Delete an article"""
     try:
         user_id = get_jwt_identity()
+        
+        # Convert user_id to integer if it's a string (same fix as in other routes)
+        if isinstance(user_id, str):
+            try:
+                user_id = int(user_id)
+            except ValueError:
+                return jsonify({'error': 'Invalid user identity'}), 401
+        
         article = Article.query.get(article_id)
         
         if not article:
