@@ -125,13 +125,24 @@ src/app/digests/page.tsx (133:19) @ eval
   - can not view article, update frontend to implement it ✅
   - enhance view article function in admin dashboard, should enable user to back to admin dashboard instead of the page of all public articles ✅
 
+- git log: enhance admin function to add a markdown editor for editing article content and show it by parsing markdown content
+- prompts:
+  - continue working on reader digest, to enhance admin function to enable user use a markdown editor for editing article content, and also show content of article by parsing markdown content on public articles screen
+  - continue enhancing the function, can see original content at left-side when editing article content with markdown editor, now only show the parsing content at the right-side
+  - still can not view original content and parsed content in the editor, fix it
+  - content not showing there for both sides
+
 
 ## future functions
 
-- user can a markdown editor for article content, and also show content of article by parsing markdown on public article screen
+- fix bug: markdown editor not showing content on both left and right sides
 - user can view/edit/delete user own digest in admin console
 - super admin can manage all contents including articles and digests
 - user can have chrome extension to add articles with notes input
+
+nice to have - if worthing doing?
+- can add good food/restaurant collections per others' recommendation as life is important part along with reading/digests - thoughts
+- can add good book review
 - user can bring their own OpenAI compatible API token and URL for AI summary for digest
 
 prompts: continue working on it, to implement ...

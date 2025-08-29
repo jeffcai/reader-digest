@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { ArrowLeftIcon } from 'lucide-react';
 import Link from 'next/link';
+import MarkdownEditor from '@/components/MarkdownEditor';
 
 interface ArticleFormData {
   title: string;
@@ -189,15 +190,11 @@ export default function NewArticlePage() {
             <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
               Content <span className="text-red-500">*</span>
             </label>
-            <textarea
-              id="content"
-              name="content"
-              required
-              rows={8}
+            <MarkdownEditor
               value={formData.content}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Paste the article content here or write a summary..."
+              onChange={(val) => setFormData(prev => ({ ...prev, content: val || '' }))}
+              placeholder="Paste the article content here or write a summary... (Supports Markdown formatting)"
+              height={400}
             />
           </div>
 

@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { ArrowLeftIcon } from 'lucide-react';
 import Link from 'next/link';
 import Cookies from 'js-cookie';
+import MarkdownEditor from '@/components/MarkdownEditor';
 
 interface ArticleFormData {
   title: string;
@@ -281,15 +282,11 @@ export default function EditArticlePage() {
             <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
               Content *
             </label>
-            <textarea
-              id="content"
-              name="content"
-              rows={10}
+            <MarkdownEditor
               value={formData.content}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Write the main content of the article..."
-              required
+              onChange={(val) => setFormData(prev => ({ ...prev, content: val || '' }))}
+              placeholder="Write the main content of the article... (Supports Markdown formatting)"
+              height={400}
             />
           </div>
 

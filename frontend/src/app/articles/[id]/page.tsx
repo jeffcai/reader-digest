@@ -8,6 +8,7 @@ import { formatDate, getDomainFromUrl, extractTags } from '@/lib/utils';
 import { ArrowLeft, ExternalLink, Calendar, Tag, User, Share2, Copy, Check } from 'lucide-react';
 import Link from 'next/link';
 import UrlPreviewCard from '@/components/UrlPreviewCard';
+import MarkdownRenderer from '@/components/MarkdownRenderer';
 
 export default function ArticleView() {
   const params = useParams();
@@ -233,9 +234,13 @@ export default function ArticleView() {
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 mb-8">
         <h2 className="text-xl font-semibold text-gray-900 mb-4">Content</h2>
         <div className="prose prose-lg max-w-none">
-          <div className="text-gray-700 leading-relaxed whitespace-pre-wrap">
-            {article.content || 'No content available for this article.'}
-          </div>
+          {article.content ? (
+            <MarkdownRenderer content={article.content} />
+          ) : (
+            <div className="text-gray-500 italic">
+              No content available for this article.
+            </div>
+          )}
         </div>
       </div>
 

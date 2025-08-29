@@ -1,6 +1,6 @@
 import React from 'react';
 import { Article } from '@/lib/types';
-import { formatDate, getDomainFromUrl, extractTags, truncateText } from '@/lib/utils';
+import { formatDate, getDomainFromUrl, extractTags, truncateText, stripMarkdown } from '@/lib/utils';
 import { ExternalLink, Calendar, Tag, User } from 'lucide-react';
 import UrlPreviewCard from './UrlPreviewCard';
 
@@ -56,6 +56,13 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, viewMode, onArticleC
             {article.notes && (
               <p className="text-gray-700 mb-3">
                 {truncateText(article.notes, 200)}
+              </p>
+            )}
+
+            {/* Content Preview */}
+            {article.content && (
+              <p className="text-gray-600 mb-3 italic">
+                {truncateText(stripMarkdown(article.content), 150)}
               </p>
             )}
 
@@ -129,6 +136,13 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, viewMode, onArticleC
         {article.notes && (
           <p className="text-gray-700 text-sm mb-3 flex-1">
             {truncateText(article.notes, 120)}
+          </p>
+        )}
+
+        {/* Content Preview */}
+        {article.content && (
+          <p className="text-gray-600 text-sm mb-3 flex-1 italic">
+            {truncateText(stripMarkdown(article.content), 100)}
           </p>
         )}
 
@@ -212,8 +226,14 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, viewMode, onArticleC
       {/* Content */}
       <div className="p-4 flex-1 flex flex-col">
         {article.notes && (
-          <p className="text-gray-700 mb-4 flex-1">
+          <p className="text-gray-700 mb-3 flex-1">
             {truncateText(article.notes, 300)}
+          </p>
+        )}
+        
+        {article.content && (
+          <p className="text-gray-600 italic mb-4 text-sm">
+            {truncateText(stripMarkdown(article.content), 200)}
           </p>
         )}
 

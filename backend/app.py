@@ -42,6 +42,9 @@ def create_app():
     def health_check():
         return {'status': 'OK', 'message': 'Flask app is running'}
     
+    # Import models to ensure they are registered with SQLAlchemy
+    from models.models import User, Article, Digest
+    
     # Create tables
     with app.app_context():
         db.create_all()
