@@ -132,10 +132,8 @@ src/app/digests/page.tsx (133:19) @ eval
   - still can not view original content and parsed content in the editor, fix it
   - content not showing there for both sides
 
-
 ## future functions
 
-- fix bug: markdown editor not showing content on both left and right sides
 - user can view/edit/delete user own digest in admin console
 - super admin can manage all contents including articles and digests
 - user can have chrome extension to add articles with notes input
