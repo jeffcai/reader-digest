@@ -11,7 +11,15 @@ const api = axios.create({
   },
 });
 
-// Request interceptor to add auth token
+// Create a separate axios instance for public API calls (no auth required)
+const publicApi = axios.create({
+  baseURL: `${API_BASE_URL}/api/v1`,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Request interceptor to add auth token (only for authenticated api)
 api.interceptors.request.use(
   (config) => {
     const token = Cookies.get('access_token');
@@ -143,6 +151,30 @@ export const digestsAPI = {
   }) => api.post('/digests/generate-weekly', data),
 
   getAvailableWeeks: () => api.get('/digests/available-weeks'),
+};
+
+// Public Digests API (no authentication required)
+export const publicDigestsAPI = {
+  getDigest: (id: number) => publicApi.get(`/digests/${id}`),
+  getDigests: (params?: {
+    page?: number;
+    per_page?: number;
+    view?: 'public';
+  }) => publicApi.get('/digests', { params }),
+};
+
+// Public Articles API (no authentication required)
+export const publicArticlesAPI = {
+  getArticle: (id: number) => publicApi.get(`/articles/${id}`),
+  getArticles: (params?: {
+    page?: number;
+    per_page?: number;
+    user_id?: number;
+    date?: string;
+    tag?: string;
+    view?: 'public';
+  }) => publicApi.get('/articles', { params }),
+  previewUrl: (url: string) => publicApi.post('/articles/preview-url', { url }),
 };
 
 // Users API

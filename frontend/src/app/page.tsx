@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Article, ViewMode } from '@/lib/types';
-import { articlesAPI } from '@/lib/api';
+import { publicArticlesAPI } from '@/lib/api';
 import ArticleCard from '@/components/ArticleCard';
 import { getErrorMessage } from '@/lib/utils';
 import { Search, Grid, List, Calendar, Filter, X } from 'lucide-react';
@@ -41,7 +41,7 @@ export default function Home() {
   const fetchArticles = async () => {
     try {
       setLoading(true);
-      const response = await articlesAPI.getArticles({
+      const response = await publicArticlesAPI.getArticles({
         page: currentPage,
         per_page: 12,
         view: 'public',

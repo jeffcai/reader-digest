@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { digestsAPI } from '@/lib/api';
+import { publicDigestsAPI } from '@/lib/api';
 import { Digest, DigestsResponse } from '@/lib/types';
 
 export default function PublicDigestsPage() {
@@ -20,10 +20,10 @@ export default function PublicDigestsPage() {
     setError(null);
     
     try {
-      const response = await digestsAPI.getDigests({ view: 'public' });
+      const response = await publicDigestsAPI.getDigests({ view: 'public' });
       const digestsData = response.data as DigestsResponse;
       setDigests(digestsData.digests.filter(digest => digest.is_published && digest.is_public));
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to load public digests:', error);
       setError('Failed to load public digests');
     } finally {

@@ -132,10 +132,20 @@ src/app/digests/page.tsx (133:19) @ eval
   - still can not view original content and parsed content in the editor, fix it
   - content not showing there for both sides
 
+- git log: enhance admin function to enable user can add/view/edit/delete weekly digest, and use markdown for editing and view content
+- prompts:
+  - continue working on reader digest, to enhance admin function to enable user can add/view/edit/delete weekly digest, to edit digest similar with article editing it provides markdown editor, and meanwhile show digest summary with parsed markdown content on public digest screen or view page in admin console
+  - fix bug, when view digest, it redirect to login page but logged in already
+  - for public digest, to view them it's no need to login but for admin functions it's required, implementation should be same as the one for article
+  - do not like the naming for publicAPI for digest, make it more specific, using consistent naming convention
+  - publicApi can be used for article API too
+
 ## future functions
 
-- user can view/edit/delete user own digest in admin console
-- super admin can manage all contents including articles and digests
+- fix current implementation, view public digest it should not show a markdown editor instead show parsed markdown content, should be same as view public digest including user experience
+- enhance design to access public article and digest with same user experience, for example, view public digest details should be same experience with view public article 
+- user can view AI summary information which by default with local ollama OpenAI API compatible services, but user can bring their their own OpenAPI compatible service by providing API token, URL and model information
+- super admin (user with admin role) can manage all contents including articles and digests
 - user can have chrome extension to add articles with notes input
 
 nice to have - if worthing doing?

@@ -1,11 +1,27 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { digestsAPI } from '@/lib/api';
-import { Digest } from '@/lib/types';
+import MarkdownPreview from '@uiw/react-md-editor/nohighlight';
+import { publicDigestsAPI } from '@/lib/api';
 
-export default function DigestViewPage() {
+interface Digest {
+  id: number;
+  title: string;
+  content: string;
+  summary?: string;
+  week_start: string;
+  week_end: string;
+  created_at: string;
+  updated_at: string;
+  published_at?: string;
+  is_published: boolean;
+  is_public: boolean;
+  user_id: number;
+  author?: string;
+}
+
+export default function PublicDigestView() {
   const params = useParams();
   const router = useRouter();
   const [digest, setDigest] = useState<Digest | null>(null);
@@ -24,15 +40,11 @@ export default function DigestViewPage() {
     setError(null);
     
     try {
-      const response = await digestsAPI.getDigest(parseInt(digestId));
+      // Use publicDigestsAPI for public digest viewing (no authentication required)
+      const response = await publicDigestsAPI.getDigest(parseInt(digestId));
       const digestData = response.data.digest as Digest;
       
-      // Check if digest is published and public, or if user owns it
-      if (!digestData.is_published || !digestData.is_public) {
-        setError('This digest is not available publicly');
-        return;
-      }
-      
+      // Backend already handles public/published checks
       setDigest(digestData);
     } catch (error: unknown) {
       console.error('Failed to load digest:', error);
@@ -63,117 +75,10 @@ export default function DigestViewPage() {
     return `${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`;
   };
 
-  const renderMarkdownContent = (content: string) => {
-    // Split content by lines for processing
-    const lines = content.split('\n');
-    const elements: React.ReactElement[] = [];
-    
-    lines.forEach((line, index) => {
-      const trimmedLine = line.trim();
-      const uniqueKey = `digest-line-${index}-${trimmedLine.slice(0, 20).replace(/[^a-zA-Z0-9]/g, '')}-${line.length}`;
-      
-      if (trimmedLine.startsWith('# ')) {
-        // Main heading
-        elements.push(
-          <h1 key={uniqueKey} className="text-3xl font-bold text-gray-900 mb-6 border-b border-gray-200 pb-4">
-            {trimmedLine.slice(2)}
-          </h1>
-        );
-      } else if (trimmedLine.startsWith('## ')) {
-        // Section heading
-        elements.push(
-          <h2 key={uniqueKey} className="text-2xl font-semibold text-gray-800 mb-4 mt-8">
-            {trimmedLine.slice(3)}
-          </h2>
-        );
-      } else if (trimmedLine.startsWith('### ')) {
-        // Article heading (with link extraction)
-        const linkMatch = trimmedLine.match(/###\s*(\d+\.\s*)?\[([^\]]+)\]\(([^)]+)\)/);
-        if (linkMatch) {
-          const [, number, title, url] = linkMatch;
-          elements.push(
-            <div key={uniqueKey} className="mb-6">
-              <h3 className="text-xl font-medium text-gray-900 mb-3">
-                {number && <span className="text-blue-600 mr-2">{number}</span>}
-                <a 
-                  href={url} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:text-blue-800 hover:underline"
-                >
-                  {title}
-                </a>
-              </h3>
-            </div>
-          );
-        } else {
-          elements.push(
-            <h3 key={uniqueKey} className="text-xl font-medium text-gray-900 mb-3">
-              {trimmedLine.slice(4)}
-            </h3>
-          );
-        }
-      } else if (trimmedLine.startsWith('**') && trimmedLine.endsWith('**')) {
-        // Bold metadata lines
-        const boldText = trimmedLine.slice(2, -2);
-        elements.push(
-          <p key={uniqueKey} className="font-semibold text-gray-800 mb-2">
-            {boldText}
-          </p>
-        );
-      } else if (trimmedLine.startsWith('> ')) {
-        // Quote/notes
-        elements.push(
-          <blockquote key={uniqueKey} className="border-l-4 border-blue-200 pl-4 italic text-gray-700 mb-2 bg-blue-50 py-2">
-            {trimmedLine.slice(2)}
-          </blockquote>
-        );
-      } else if (trimmedLine.startsWith('_') && trimmedLine.endsWith('_')) {
-        // Italic text (AI summaries)
-        elements.push(
-          <p key={uniqueKey} className="italic text-gray-600 bg-gray-50 px-4 py-3 rounded-md mb-3">
-            {trimmedLine.slice(1, -1)}
-          </p>
-        );
-      } else if (trimmedLine.includes('`')) {
-        // Tags with backticks
-        const processedLine = trimmedLine.replace(/`([^`]+)`/g, '<span class="inline-block bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm font-mono mr-1">$1</span>');
-        elements.push(
-          <div key={uniqueKey} className="mb-2" dangerouslySetInnerHTML={{ __html: processedLine }} />
-        );
-      } else if (trimmedLine === '---') {
-        // Horizontal rule
-        elements.push(
-          <hr key={uniqueKey} className="my-8 border-gray-300" />
-        );
-      } else if (trimmedLine.startsWith('*') && trimmedLine.endsWith('*')) {
-        // Footer text
-        elements.push(
-          <p key={uniqueKey} className="text-sm text-gray-500 italic text-center mt-6">
-            {trimmedLine.slice(1, -1)}
-          </p>
-        );
-      } else if (trimmedLine) {
-        // Regular paragraph
-        elements.push(
-          <p key={uniqueKey} className="text-gray-700 mb-3 leading-relaxed">
-            {trimmedLine}
-          </p>
-        );
-      } else {
-        // Empty line - add spacing
-        elements.push(<div key={uniqueKey} className="mb-2" />);
-      }
-    });
-    
-    return elements;
-  };
-
   const handleShare = async () => {
     const url = window.location.href;
     try {
       await navigator.clipboard.writeText(url);
-      // You could add a toast notification here
       alert('Link copied to clipboard!');
     } catch (err) {
       console.error('Failed to copy link:', err);
@@ -209,7 +114,7 @@ export default function DigestViewPage() {
               </div>
               <h3 className="text-lg font-medium text-gray-900 mb-2">{error || 'Digest not found'}</h3>
               <p className="text-gray-600 mb-6">
-                This digest may have been removed or you don't have permission to view it.
+                This digest may have been removed or you don&apos;t have permission to view it.
               </p>
               <button
                 onClick={() => router.back()}
@@ -282,10 +187,18 @@ export default function DigestViewPage() {
             )}
           </div>
 
-          {/* Article Body */}
+          {/* Article Body - Using MarkdownPreview like articles */}
           <div className="px-6 py-8">
             <div className="prose prose-lg max-w-none">
-              {renderMarkdownContent(digest.content)}
+              <MarkdownPreview 
+                value={digest.content} 
+                style={{ 
+                  backgroundColor: 'transparent',
+                  color: '#374151',
+                  fontSize: '16px',
+                  lineHeight: '1.7'
+                }}
+              />
             </div>
           </div>
 

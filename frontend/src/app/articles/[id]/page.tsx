@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Article } from '@/lib/types';
-import { articlesAPI } from '@/lib/api';
+import { publicArticlesAPI } from '@/lib/api';
 import { formatDate, getDomainFromUrl, extractTags } from '@/lib/utils';
 import { ArrowLeft, ExternalLink, Calendar, Tag, User, Share2, Copy, Check } from 'lucide-react';
 import Link from 'next/link';
@@ -42,8 +42,8 @@ export default function ArticleView() {
       setLoading(true);
       setError(null);
       
-      // Get the specific article by ID using the API
-      const response = await articlesAPI.getArticle(parseInt(articleId));
+      // Use publicArticlesAPI for public article viewing (no authentication required)
+      const response = await publicArticlesAPI.getArticle(parseInt(articleId));
       setArticle(response.data.article);
     } catch (err: any) {
       console.error('Error fetching article:', err);

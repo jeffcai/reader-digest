@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { UrlPreview } from '@/lib/types';
-import { articlesAPI } from '@/lib/api';
-import { ExternalLink, Globe, Image as ImageIcon, Loader2, AlertCircle } from 'lucide-react';
+import { publicArticlesAPI } from '@/lib/api';
+import { ExternalLink, Globe, Loader2, AlertCircle } from 'lucide-react';
 import { getDomainFromUrl } from '@/lib/utils';
 
 interface UrlPreviewCardProps {
@@ -34,8 +34,8 @@ const UrlPreviewCard: React.FC<UrlPreviewCardProps> = ({
     setError(null);
     
     try {
-      const response = await articlesAPI.previewUrl(url);
-      setPreview(response.data);
+      const response = await publicArticlesAPI.previewUrl(url);
+      const previewData = response.data;
     } catch (err: any) {
       console.error('Failed to fetch URL preview:', err);
       setError(err.response?.data?.error || 'Failed to load preview');
