@@ -1,12 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { publicDigestsAPI } from '@/lib/api';
 import { Digest, DigestsResponse } from '@/lib/types';
 
 export default function PublicDigestsPage() {
-  const router = useRouter();
   const [digests, setDigests] = useState<Digest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -111,12 +110,12 @@ export default function PublicDigestsPage() {
                   )}
 
                   <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-                    <button 
-                      onClick={() => router.push(`/digests/${digest.id}`)}
+                    <Link 
+                      href={`/digests/${digest.id}?ref=public`}
                       className="text-blue-600 hover:text-blue-800 font-medium text-sm transition-colors"
                     >
                       Read Full Digest →
-                    </button>
+                    </Link>
                     <div className="flex items-center space-x-4 text-sm text-gray-500">
                       <button className="hover:text-gray-700 transition-colors">
                         💬 Comment

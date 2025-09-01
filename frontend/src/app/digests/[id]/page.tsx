@@ -1,9 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import MarkdownPreview from '@uiw/react-md-editor/nohighlight';
+import { useParams, useSearchParams } from 'next/navigation';
 import { publicDigestsAPI } from '@/lib/api';
+import { ArrowLeft, Calendar, User, Share2, Check } from 'lucide-react';
+import Link from 'next/link';
+import MarkdownRenderer from '@/components/MarkdownRenderer';
 
 interface Digest {
   id: number;
@@ -21,13 +23,23 @@ interface Digest {
   author?: string;
 }
 
-export default function PublicDigestView() {
-  const params = useParams();
-  const router = useRouter();
+export default function DigestPage({ params }: { params: { id: string } }) {
+  const searchParams = useSearchParams();
   const [digest, setDigest] = useState<Digest | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [copySuccess, setCopySuccess] = useState(false);
   const digestId = params.id as string;
+  const referrer = searchParams.get('ref');
+
+  // Helper functions for navigation based on referrer
+  const getBackUrl = () => {
+    return referrer === 'admin' ? '/admin' : '/public/digests';
+  };
+
+  const getBackLabel = () => {
+    return referrer === 'admin' ? 'Back to Admin Dashboard' : 'Back to Digests';
+  };
 
   useEffect(() => {
     if (digestId) {
@@ -77,159 +89,142 @@ export default function PublicDigestView() {
 
   const handleShare = async () => {
     const url = window.location.href;
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: digest?.title || 'Weekly Digest',
+          text: digest?.summary || '',
+          url: url,
+        });
+      } catch {
+        // Fallback to copy to clipboard
+        copyToClipboard(url);
+      }
+    } else {
+      copyToClipboard(url);
+    }
+  };
+
+  const copyToClipboard = async (text: string) => {
     try {
-      await navigator.clipboard.writeText(url);
-      alert('Link copied to clipboard!');
-    } catch (err) {
-      console.error('Failed to copy link:', err);
+      await navigator.clipboard.writeText(text);
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+    } catch {
+      console.error('Failed to copy');
     }
   };
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-            <div className="flex items-center justify-center">
-              <svg className="animate-spin h-8 w-8 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              <span className="ml-3 text-gray-600">Loading digest...</span>
-            </div>
-          </div>
-        </div>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
       </div>
     );
   }
 
   if (error || !digest) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-            <div className="text-center">
-              <div className="mx-auto h-12 w-12 text-red-400 mb-4 text-4xl">
-                ⚠️
-              </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">{error || 'Digest not found'}</h3>
-              <p className="text-gray-600 mb-6">
-                This digest may have been removed or you don&apos;t have permission to view it.
-              </p>
-              <button
-                onClick={() => router.back()}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                Go Back
-              </button>
-            </div>
-          </div>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="text-6xl text-gray-400 mb-4">⚠️</div>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            {error || 'Digest not found'}
+          </h3>
+          <p className="text-gray-600 mb-6">
+            This digest may have been removed or you don&apos;t have permission to view it.
+          </p>
+          <Link
+            href={getBackUrl()}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium inline-flex items-center"
+          >
+            <ArrowLeft className="h-5 w-5 mr-2" />
+            {getBackLabel()}
+          </Link>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
-          <div className="px-6 py-4">
-            <div className="flex items-center justify-between">
-              <button
-                onClick={() => router.back()}
-                className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-              >
-                ← Back
-              </button>
-              <div className="flex items-center space-x-4">
-                <button
-                  onClick={handleShare}
-                  className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 text-sm font-medium"
-                >
-                  📤 Share
-                </button>
-              </div>
-            </div>
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Navigation and Actions */}
+      <div className="flex items-center justify-between mb-8">
+        <Link
+          href={getBackUrl()}
+          className="flex items-center text-blue-600 hover:text-blue-800 transition-colors"
+        >
+          <ArrowLeft className="h-5 w-5 mr-2" />
+          {getBackLabel()}
+        </Link>
+        
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={handleShare}
+            className="flex items-center text-gray-600 hover:text-blue-600 transition-colors px-3 py-2 rounded-md hover:bg-gray-100"
+          >
+            {copySuccess ? (
+              <Check className="h-5 w-5 mr-1" />
+            ) : (
+              <Share2 className="h-5 w-5 mr-1" />
+            )}
+            {copySuccess ? 'Copied!' : 'Share'}
+          </button>
+        </div>
+      </div>
+
+      {/* Digest Title */}
+      <h1 className="text-3xl font-bold text-gray-900 mb-4">
+        {digest.title || `Weekly Digest - ${formatDateRange(digest.week_start, digest.week_end)}`}
+      </h1>
+
+      {/* Digest Meta */}
+      <div className="flex flex-wrap items-center space-x-6 text-sm text-gray-500 mb-6">
+        <div className="flex items-center space-x-1">
+          <Calendar className="h-4 w-4" />
+          <span>{formatDateRange(digest.week_start, digest.week_end)}</span>
+        </div>
+        
+        {digest.author && (
+          <div className="flex items-center space-x-1">
+            <User className="h-4 w-4" />
+            <span>By {digest.author || `User ${digest.user_id}`}</span>
+          </div>
+        )}
+        
+        <span className="text-blue-600">
+          Published {formatDate(digest.published_at || digest.created_at)}
+        </span>
+      </div>
+
+      {/* Digest Summary */}
+      {digest.summary && (
+        <div className="bg-blue-50 rounded-lg border border-blue-200 p-6 mb-8">
+          <h2 className="text-xl font-semibold text-blue-800 mb-4">Summary</h2>
+          <div className="text-blue-700 leading-relaxed">
+            {digest.summary}
           </div>
         </div>
+      )}
 
-        {/* Digest Content */}
-        <article className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-          {/* Article Header */}
-          <div className="px-6 py-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                  <span className="text-blue-600 text-lg font-medium">
-                    {digest.author?.charAt(0).toUpperCase() || 'U'}
-                  </span>
-                </div>
-                <div>
-                  <p className="font-medium text-gray-900">
-                    {digest.author || `User ${digest.user_id}`}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    Published {formatDate(digest.published_at || digest.created_at)}
-                  </p>
-                </div>
-              </div>
-              <div className="text-sm text-gray-600 bg-white px-3 py-2 rounded-md border">
-                📅 {formatDateRange(digest.week_start, digest.week_end)}
-              </div>
-            </div>
+      {/* Digest Content */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 mb-8">
+        <h2 className="text-xl font-semibold text-gray-900 mb-4">Weekly Digest Content</h2>
+        <div className="prose prose-lg max-w-none">
+          <MarkdownRenderer content={digest.content} />
+        </div>
+      </div>
 
-            {digest.summary && (
-              <div className="bg-white rounded-md p-4 border-l-4 border-blue-300">
-                <h4 className="font-medium text-gray-900 mb-2">Summary</h4>
-                <p className="text-gray-700 leading-relaxed">{digest.summary}</p>
-              </div>
-            )}
-          </div>
-
-          {/* Article Body - Using MarkdownPreview like articles */}
-          <div className="px-6 py-8">
-            <div className="prose prose-lg max-w-none">
-              <MarkdownPreview 
-                value={digest.content} 
-                style={{ 
-                  backgroundColor: 'transparent',
-                  color: '#374151',
-                  fontSize: '16px',
-                  lineHeight: '1.7'
-                }}
-              />
-            </div>
-          </div>
-
-          {/* Footer */}
-          <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
-            <div className="flex items-center justify-between">
-              <div className="text-sm text-gray-500">
-                Created: {formatDate(digest.created_at)}
-                {digest.updated_at !== digest.created_at && (
-                  <span className="ml-4">
-                    Updated: {formatDate(digest.updated_at)}
-                  </span>
-                )}
-              </div>
-              <div className="flex items-center space-x-4">
-                <button
-                  onClick={handleShare}
-                  className="text-sm text-blue-600 hover:text-blue-800 font-medium"
-                >
-                  📤 Share this digest
-                </button>
-                <a
-                  href="/public/digests"
-                  className="text-sm text-gray-600 hover:text-gray-800 font-medium"
-                >
-                  📚 More digests
-                </a>
-              </div>
-            </div>
-          </div>
-        </article>
+      {/* Back Button */}
+      <div className="text-center">
+        <Link
+          href={getBackUrl()}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium inline-flex items-center"
+        >
+          <ArrowLeft className="h-5 w-5 mr-2" />
+          {getBackLabel()}
+        </Link>
       </div>
     </div>
   );

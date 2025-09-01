@@ -140,13 +140,17 @@ src/app/digests/page.tsx (133:19) @ eval
   - do not like the naming for publicAPI for digest, make it more specific, using consistent naming convention
   - publicApi can be used for article API too
 
+- git log: fix digest content view issue, and enhance UX design
+- prompts:
+  - fix current implementation, viewing public digest it should not show a markdown editor instead show parsed markdown content for view, and meanwhile it should be same as viewing public digest for user experience like navigating to the view page 
+
 ## future functions
 
-- fix current implementation, view public digest it should not show a markdown editor instead show parsed markdown content, should be same as view public digest including user experience
-- enhance design to access public article and digest with same user experience, for example, view public digest details should be same experience with view public article 
 - user can view AI summary information which by default with local ollama OpenAI API compatible services, but user can bring their their own OpenAPI compatible service by providing API token, URL and model information
 - super admin (user with admin role) can manage all contents including articles and digests
 - user can have chrome extension to add articles with notes input
+- UX design and user experience not very consistent across different modules
+
 
 nice to have - if worthing doing?
 - can add good food/restaurant collections per others' recommendation as life is important part along with reading/digests - thoughts
