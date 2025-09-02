@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { PlusIcon, EditIcon, TrashIcon, EyeIcon } from 'lucide-react';
+import { PlusIcon, PencilIcon, TrashIcon, EyeIcon } from 'lucide-react';
 import { digestsAPI } from '@/lib/api';
 import { Digest, DigestsResponse } from '@/lib/types';
 
@@ -214,8 +214,8 @@ export default function AdminDigestsPage() {
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Dates
                         </th>
-                        <th className="relative px-6 py-3">
-                          <span className="sr-only">Actions</span>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Actions
                         </th>
                       </tr>
                     </thead>
@@ -255,30 +255,28 @@ export default function AdminDigestsPage() {
                               <div>Published: {formatDate(digest.published_at)}</div>
                             )}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <div className="flex justify-end space-x-2">
-                              <Link
-                                href={`/admin/digests/${digest.id}`}
-                                className="text-blue-600 hover:text-blue-900 transition-colors inline-flex items-center"
-                              >
-                                <EyeIcon className="h-4 w-4 mr-1" />
-                                View
-                              </Link>
-                              <Link
-                                href={`/admin/digests/${digest.id}/edit`}
-                                className="text-gray-600 hover:text-gray-900 transition-colors inline-flex items-center"
-                              >
-                                <EditIcon className="h-4 w-4 mr-1" />
-                                Edit
-                              </Link>
-                              <button 
-                                onClick={() => handleDeleteDigest(digest.id, digest.title)}
-                                className="text-red-600 hover:text-red-900 transition-colors inline-flex items-center"
-                              >
-                                <TrashIcon className="h-4 w-4 mr-1" />
-                                Delete
-                              </button>
-                            </div>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                            <Link
+                              href={`/admin/digests/${digest.id}/edit`}
+                              className="text-blue-600 hover:text-blue-900 inline-flex items-center"
+                              title="Edit Digest"
+                            >
+                              <PencilIcon className="h-4 w-4" />
+                            </Link>
+                            <Link
+                              href={`/digests/${digest.id}?ref=admin`}
+                              className="text-gray-600 hover:text-gray-900 inline-flex items-center"
+                              title="View Digest"
+                            >
+                              <EyeIcon className="h-4 w-4" />
+                            </Link>
+                            <button 
+                              onClick={() => handleDeleteDigest(digest.id, digest.title)}
+                              className="text-red-600 hover:text-red-900 inline-flex items-center"
+                              title="Delete Digest"
+                            >
+                              <TrashIcon className="h-4 w-4" />
+                            </button>
                           </td>
                         </tr>
                       ))}

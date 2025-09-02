@@ -162,6 +162,10 @@ src/app/digests/[id]/page.tsx (32:27) @ DigestPage
   35 |   // Helper functions for navigation based on referrer
   ```
 
+- git log: enhance admin UI consistency for articles and digests action columns
+- prompts:
+  - two list of articles and digests in administration page, the last column for action with different style and design icon, enhance them to make them consistent, comparing 2 ones, the one for articles looks better, more simple and nice.
+
 
 ## future functions
 
