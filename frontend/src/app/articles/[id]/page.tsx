@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Article } from '@/lib/types';
 import { publicArticlesAPI } from '@/lib/api';
 import { formatDate, getDomainFromUrl, extractTags } from '@/lib/utils';
@@ -10,11 +10,11 @@ import Link from 'next/link';
 import UrlPreviewCard from '@/components/UrlPreviewCard';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 
-export default function ArticleView() {
-  const params = useParams();
+export default function ArticleView({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = React.use(params);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const articleId = params.id as string;
+  const articleId = resolvedParams.id;
   const referrer = searchParams.get('ref');
   
   const [article, setArticle] = useState<Article | null>(null);

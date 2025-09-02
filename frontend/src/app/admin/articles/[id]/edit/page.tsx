@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { ArrowLeftIcon } from 'lucide-react';
 import Link from 'next/link';
@@ -29,9 +29,9 @@ interface Article {
   updated_at: string;
 }
 
-export default function EditArticlePage() {
-  const params = useParams();
-  const articleId = params.id as string;
+export default function EditArticlePage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = React.use(params);
+  const articleId = resolvedParams.id;
   
   const [formData, setFormData] = useState<ArticleFormData>({
     title: '',

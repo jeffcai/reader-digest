@@ -144,6 +144,25 @@ src/app/digests/page.tsx (133:19) @ eval
 - prompts:
   - fix current implementation, viewing public digest it should not show a markdown editor instead show parsed markdown content for view, and meanwhile it should be same as viewing public digest for user experience like navigating to the view page 
 
+- git log: fix params.id issue when viewing public digest
+- prompts
+  - fix below issue when viewing public digest
+  ```
+A param property was accessed directly with `params.id`. `params` is now a Promise and should be unwrapped with `React.use()` before accessing properties of the underlying params object. In this version of Next.js direct access to param properties is still supported to facilitate migration but in a future version you will be required to unwrap `params` with `React.use()`.
+
+src/app/digests/[id]/page.tsx (32:27) @ DigestPage
+
+
+  30 |   const [error, setError] = useState<string | null>(null);
+  31 |   const [copySuccess, setCopySuccess] = useState(false);
+> 32 |   const digestId = params.id as string;
+     |                           ^
+  33 |   const referrer = searchParams.get('ref');
+  34 |
+  35 |   // Helper functions for navigation based on referrer
+  ```
+
+
 ## future functions
 
 - user can view AI summary information which by default with local ollama OpenAI API compatible services, but user can bring their their own OpenAPI compatible service by providing API token, URL and model information

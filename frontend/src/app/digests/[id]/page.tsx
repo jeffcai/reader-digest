@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import { publicDigestsAPI } from '@/lib/api';
 import { ArrowLeft, Calendar, User, Share2, Check } from 'lucide-react';
@@ -23,13 +23,14 @@ interface Digest {
   author?: string;
 }
 
-export default function DigestPage({ params }: { params: { id: string } }) {
+export default function DigestPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = React.use(params);
   const searchParams = useSearchParams();
   const [digest, setDigest] = useState<Digest | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [copySuccess, setCopySuccess] = useState(false);
-  const digestId = params.id as string;
+  const digestId = resolvedParams.id;
   const referrer = searchParams.get('ref');
 
   // Helper functions for navigation based on referrer

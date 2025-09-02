@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { digestsAPI } from '@/lib/api';
 import { ArrowLeftIcon } from 'lucide-react';
@@ -32,9 +32,9 @@ interface Digest {
   published_at?: string;
 }
 
-export default function EditDigestPage() {
-  const params = useParams();
-  const digestId = params.id as string;
+export default function EditDigestPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = React.use(params);
+  const digestId = resolvedParams.id;
   
   const [formData, setFormData] = useState<DigestFormData>({
     title: '',

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { digestsAPI } from '@/lib/api';
 import { ArrowLeftIcon, EditIcon, TrashIcon, CalendarIcon, GlobeIcon, LockIcon } from 'lucide-react';
@@ -23,9 +23,9 @@ interface Digest {
   user_id: number;
 }
 
-export default function ViewDigestPage() {
-  const params = useParams();
-  const digestId = params.id as string;
+export default function ViewDigestPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = React.use(params);
+  const digestId = resolvedParams.id;
   
   const [digest, setDigest] = useState<Digest | null>(null);
   const [isLoading, setIsLoading] = useState(true);
