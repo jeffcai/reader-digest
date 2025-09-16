@@ -166,6 +166,29 @@ src/app/digests/[id]/page.tsx (32:27) @ DigestPage
 - prompts:
   - two list of articles and digests in administration page, the last column for action with different style and design icon, enhance them to make them consistent, comparing 2 ones, the one for articles looks better, more simple and nice.
 
+- git log: fix issue of adding article (may just first time)
+- prompts:
+  - fix the issue
+```
+Module not found: Can't resolve '@uiw/react-markdown-preview/markdown.css'
+
+./src/components/MarkdownEditor.tsx (5:1)
+
+Module not found: Can't resolve '@uiw/react-markdown-preview/markdown.css'
+  3 | import React from 'react';
+  4 | import dynamic from 'next/dynamic';
+> 5 | import '@uiw/react-markdown-preview/markdown.css';
+    | ^
+  6 |
+  7 | // Dynamically import the markdown preview component
+  8 | const MarkdownPreview = dynamic(
+
+https://nextjs.org/docs/messages/module-not-found
+
+Import trace for requested module:
+./src/app/admin/articles/new/page.tsx
+```  
+
 
 ## future functions
 
