@@ -189,9 +189,15 @@ Import trace for requested module:
 ./src/app/admin/articles/new/page.tsx
 ```  
 
+- git log: support pagination for both public articles and digests
+- prompts:
+  - continue working on reader digest, to enhance public article and digests features, support pagination for both public articles and digests
+  - it's possible to do a bit refactoring? we have the public/digests/page.tsx but have no articles/page.tsx (instead which is under the root of app folder), this is not consistent per structure and hard to understand it
+
 
 ## future functions
 
+- support pagination for both public articles and digests
 - user can view AI summary information which by default with local ollama OpenAI API compatible services, but user can bring their their own OpenAPI compatible service by providing API token, URL and model information
 - super admin (user with admin role) can manage all contents including articles and digests
 - user can have chrome extension to add articles with notes input

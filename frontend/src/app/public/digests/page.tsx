@@ -4,30 +4,51 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { publicDigestsAPI } from '@/lib/api';
 import { Digest, DigestsResponse } from '@/lib/types';
+import Pagination from '@/components/Pagination';
 
 export default function PublicDigestsPage() {
   const [digests, setDigests] = useState<Digest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    per_page: 10,
+    total: 0,
+    pages: 0,
+    has_next: false,
+    has_prev: false,
+  });
 
   useEffect(() => {
     loadPublicDigests();
-  }, []);
+  }, [currentPage]);
 
   const loadPublicDigests = async () => {
     setIsLoading(true);
     setError(null);
     
     try {
-      const response = await publicDigestsAPI.getDigests({ view: 'public' });
+      const response = await publicDigestsAPI.getDigests({ 
+        view: 'public',
+        page: currentPage,
+        per_page: 10
+      });
       const digestsData = response.data as DigestsResponse;
       setDigests(digestsData.digests.filter(digest => digest.is_published && digest.is_public));
+      setPagination(digestsData.pagination);
     } catch (error: unknown) {
       console.error('Failed to load public digests:', error);
       setError('Failed to load public digests');
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // Scroll to top when page changes
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const formatDate = (dateString: string) => {
@@ -71,70 +92,84 @@ export default function PublicDigestsPage() {
             </div>
           </div>
         ) : digests.length > 0 ? (
-          <div className="grid gap-8">
-            {digests.map((digest) => (
-              <article
-                key={digest.id}
-                className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow"
-              >
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                        <span className="text-blue-600 text-sm font-medium">
-                          {digest.author?.charAt(0).toUpperCase() || 'U'}
-                        </span>
+          <>
+            <div className="grid gap-8">
+              {digests.map((digest) => (
+                <article
+                  key={digest.id}
+                  className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow"
+                >
+                  <div className="p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                          <span className="text-blue-600 text-sm font-medium">
+                            {digest.author?.charAt(0).toUpperCase() || 'U'}
+                          </span>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">
+                            {digest.author || `User ${digest.user_id}`}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            Published {formatDate(digest.published_at || digest.created_at)}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">
-                          {digest.author || `User ${digest.user_id}`}
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          Published {formatDate(digest.published_at || digest.created_at)}
-                        </p>
+                      <div className="text-sm text-gray-500">
+                        📅 {formatDateRange(digest.week_start, digest.week_end)}
                       </div>
                     </div>
-                    <div className="text-sm text-gray-500">
-                      📅 {formatDateRange(digest.week_start, digest.week_end)}
-                    </div>
-                  </div>
 
-                  <h2 className="text-xl font-semibold text-gray-900 mb-3">
-                    {digest.title}
-                  </h2>
+                    <h2 className="text-xl font-bold text-gray-900 mb-3 hover:text-blue-600 transition-colors">
+                      <Link href={`/digests/${digest.id}?ref=public`}>
+                        {digest.title}
+                      </Link>
+                    </h2>
 
-                  {digest.summary && (
-                    <p className="text-gray-700 mb-4 leading-relaxed">
-                      {digest.summary}
-                    </p>
-                  )}
+                    {digest.summary && (
+                      <p className="text-gray-700 mb-4 line-clamp-3">
+                        {digest.summary}
+                      </p>
+                    )}
 
-                  <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-                    <Link 
-                      href={`/digests/${digest.id}?ref=public`}
-                      className="text-blue-600 hover:text-blue-800 font-medium text-sm transition-colors"
-                    >
-                      Read Full Digest →
-                    </Link>
-                    <div className="flex items-center space-x-4 text-sm text-gray-500">
-                      <button className="hover:text-gray-700 transition-colors">
-                        💬 Comment
-                      </button>
-                      <button 
-                        onClick={() => {
-                          navigator.clipboard.writeText(`${window.location.origin}/digests/${digest.id}`);
-                          alert('Link copied to clipboard!');
-                        }}
-                        className="hover:text-gray-700 transition-colors"
+                    <div className="flex items-center justify-between">
+                      <Link 
+                        href={`/digests/${digest.id}?ref=public`}
+                        className="text-blue-600 hover:text-blue-800 font-medium text-sm transition-colors"
                       >
-                        📤 Share
-                      </button>
+                        Read Full Digest →
+                      </Link>
+                      <div className="flex items-center space-x-4 text-sm text-gray-500">
+                        <button className="hover:text-gray-700 transition-colors">
+                          💬 Comment
+                        </button>
+                        <button 
+                          onClick={() => {
+                            navigator.clipboard.writeText(`${window.location.origin}/digests/${digest.id}`);
+                            alert('Link copied to clipboard!');
+                          }}
+                          className="hover:text-gray-700 transition-colors"
+                        >
+                          📤 Share
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </article>
-            ))}
-          </div>
+                </article>
+              ))}
+            </div>
+
+            {/* Pagination */}
+            <Pagination
+              currentPage={pagination.page}
+              totalPages={pagination.pages}
+              onPageChange={handlePageChange}
+              hasNext={pagination.has_next}
+              hasPrev={pagination.has_prev}
+              isLoading={isLoading}
+            />
+          </>
         ) : (
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12">
             <div className="text-center">

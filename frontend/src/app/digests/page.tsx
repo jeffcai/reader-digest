@@ -6,6 +6,7 @@ import { digestsAPI } from '@/lib/api';
 import { Digest, DigestsResponse, WeeklyDigestGenerationResponse } from '@/lib/types';
 import WeeklyDigestGenerator from '@/components/WeeklyDigestGenerator';
 import DigestReviewEditor from '@/components/DigestReviewEditor';
+import Pagination from '@/components/Pagination';
 
 type ViewState = 'list' | 'generate' | 'review';
 
@@ -16,19 +17,32 @@ export default function DigestsPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [generatedDigest, setGeneratedDigest] = useState<WeeklyDigestGenerationResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    per_page: 10,
+    total: 0,
+    pages: 0,
+    has_next: false,
+    has_prev: false,
+  });
 
   useEffect(() => {
     if (viewState === 'list') {
       loadDigests();
     }
-  }, [viewState]);
+  }, [viewState, currentPage]);
 
   const loadDigests = async () => {
     setIsLoading(true);
     setError(null);
     
     try {
-      const response = await digestsAPI.getDigests({ view: 'own' });
+      const response = await digestsAPI.getDigests({ 
+        view: 'own',
+        page: currentPage,
+        per_page: 10
+      });
       const digestsData = response.data as DigestsResponse;
       
       // Debug: Check for duplicate IDs
@@ -40,12 +54,19 @@ export default function DigestsPage() {
       console.log('Loaded digests:', digestsData.digests.map(d => ({ id: d.id, title: d.title })));
       
       setDigests(digestsData.digests);
+      setPagination(digestsData.pagination);
     } catch (error: any) {
       console.error('Failed to load digests:', error);
       setError('Failed to load digests');
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // Scroll to top when page changes
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleDigestGenerated = (digest: WeeklyDigestGenerationResponse) => {
@@ -137,7 +158,8 @@ export default function DigestsPage() {
                 </div>
               </div>
             ) : digests.length > 0 ? (
-              <div className="grid gap-6">
+              <>
+                <div className="grid gap-6">
                 {digests.map((digest, index) => (
                   <div
                     key={digest.id ? `digest-${digest.id}` : `digest-index-${index}`}
@@ -220,7 +242,18 @@ export default function DigestsPage() {
                     </div>
                   </div>
                 ))}
-              </div>
+                </div>
+
+                {/* Pagination */}
+                <Pagination
+                  currentPage={pagination.page}
+                  totalPages={pagination.pages}
+                  onPageChange={handlePageChange}
+                  hasNext={pagination.has_next}
+                  hasPrev={pagination.has_prev}
+                  isLoading={isLoading}
+                />
+              </>
             ) : (
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
                 <div className="text-center">

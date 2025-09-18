@@ -18,16 +18,16 @@ const SimpleNavbar = () => {
             
             <div className="hidden sm:ml-8 sm:flex sm:space-x-8">
               <Link
-                href="/"
+                href="/public/articles"
                 className="text-gray-900 hover:text-blue-600 px-3 py-2 text-sm font-medium"
               >
                 Public Articles
               </Link>
               <Link
-                href="/digests"
+                href="/public/digests"
                 className="text-gray-900 hover:text-blue-600 px-3 py-2 text-sm font-medium"
               >
-                Weekly Digests
+                Public Digests
               </Link>
             </div>
           </div>

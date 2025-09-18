@@ -42,7 +42,7 @@ const Navbar: React.FC<NavbarProps> = ({ className }) => {
             
             <div className="hidden sm:ml-8 sm:flex sm:space-x-8">
               <Link
-                href="/"
+                href="/public/articles"
                 className="text-gray-900 hover:text-blue-600 px-3 py-2 text-sm font-medium"
               >
                 Public Articles

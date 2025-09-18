@@ -24,7 +24,7 @@ export default function ArticleView({ params }: { params: Promise<{ id: string }
 
   // Helper functions for navigation based on referrer
   const getBackUrl = () => {
-    return referrer === 'admin' ? '/admin' : '/';
+    return referrer === 'admin' ? '/admin' : '/public/articles';
   };
 
   const getBackLabel = () => {

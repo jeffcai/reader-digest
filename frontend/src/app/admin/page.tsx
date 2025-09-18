@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { PlusIcon, PencilIcon, TrashIcon, EyeIcon } from 'lucide-react';
+import { articlesAPI } from '@/lib/api';
+import Pagination from '@/components/Pagination';
 import Cookies from 'js-cookie';
 
 interface Article {
@@ -23,6 +25,15 @@ export default function AdminPage() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    per_page: 10,
+    total: 0,
+    pages: 0,
+    has_next: false,
+    has_prev: false,
+  });
   const { user, isLoading: authLoading } = useAuth();
   const router = useRouter();
 
@@ -36,47 +47,31 @@ export default function AdminPage() {
     if (user) {
       fetchUserArticles();
     }
-  }, [user]);
+  }, [user, currentPage]);
 
   const fetchUserArticles = async () => {
     try {
       setLoading(true);
-      const token = Cookies.get('access_token');
-      console.log('DEBUG: Fetching user articles with token:', token ? 'Token present' : 'No token');
-      
-      if (!token) {
-        console.log('DEBUG: No token found - redirecting to login');
-        router.push('/login');
-        return;
-      }
-      
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001'}/api/v1/articles?view=own`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+      const response = await articlesAPI.getArticles({
+        view: 'own',
+        page: currentPage,
+        per_page: 10
       });
 
-      console.log('DEBUG: Response status:', response.status);
-      if (response.ok) {
-        const data = await response.json();
-        console.log('DEBUG: Received articles count:', data.articles?.length || 0);
-        setArticles(data.articles || []);
-      } else if (response.status === 401) {
-        console.log('DEBUG: Authentication failed - redirecting to login');
-        router.push('/login');
-        return;
-      } else {
-        console.log('DEBUG: Response error:', response.statusText);
-        const errorData = await response.json().catch(() => ({}));
-        console.log('DEBUG: Error data:', errorData);
-        setError('Failed to fetch articles');
-      }
+      setArticles(response.data.articles || []);
+      setPagination(response.data.pagination);
     } catch (error) {
       console.error('Error fetching articles:', error);
       setError('Error loading articles');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // Scroll to top when page changes
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleDeleteArticle = async (articleId: number) => {
@@ -325,6 +320,19 @@ export default function AdminPage() {
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+        
+        {/* Pagination */}
+        {pagination && pagination.pages > 1 && (
+          <div className="mt-6">
+            <Pagination
+              currentPage={pagination.page}
+              totalPages={pagination.pages}
+              hasNext={pagination.has_next}
+              hasPrev={pagination.has_prev}
+              onPageChange={handlePageChange}
+            />
           </div>
         )}
       </div>
