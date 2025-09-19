@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
-import { User, LogOut, BookOpen, FileText, Settings, ChevronDown } from 'lucide-react';
+import { User, LogOut, BookOpen, FileText, Settings, ChevronDown, Rss } from 'lucide-react';
 
 interface NavbarProps {
   className?: string;
@@ -66,6 +66,17 @@ const Navbar: React.FC<NavbarProps> = ({ className }) => {
 
           {/* User menu */}
           <div className="flex items-center space-x-4">
+            {/* RSS Feed Link */}
+            <a
+              href={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001'}/rss/articles.xml`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-700 hover:text-orange-600 p-2 rounded-md transition-colors"
+              title="Subscribe to RSS Feed"
+            >
+              <Rss className="h-5 w-5" />
+            </a>
+            
             {user ? (
               <>
                 <div className="hidden sm:flex sm:items-center sm:space-x-4">

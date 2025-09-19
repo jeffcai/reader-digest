@@ -194,6 +194,10 @@ Import trace for requested module:
   - continue working on reader digest, to enhance public article and digests features, support pagination for both public articles and digests
   - it's possible to do a bit refactoring? we have the public/digests/page.tsx but have no articles/page.tsx (instead which is under the root of app folder), this is not consistent per structure and hard to understand it
 
+- git log: support using rss to subscribe public articles
+- prompts:
+  - continue working on reader digest, to support using rss to subscribe public articles
+
 
 ## future functions
 

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { BookOpen, FileText, Users, TrendingUp } from 'lucide-react';
+import { BookOpen, FileText, Users, TrendingUp, Rss } from 'lucide-react';
 
 export default function HomePage() {
   return (
@@ -120,6 +120,60 @@ export default function HomePage() {
               </div>
             </div>
           </Link>
+        </div>
+
+        {/* RSS Subscription Section */}
+        <div className="mt-16 text-center">
+          <div className="bg-gradient-to-r from-orange-100 to-yellow-100 rounded-2xl p-8">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-600 rounded-full mb-6">
+              <Rss className="h-8 w-8 text-white" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              Subscribe to Our RSS Feed
+            </h2>
+            <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+              Stay updated with the latest articles shared by our community. Add our RSS feed to your favorite RSS reader and never miss interesting content.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <a
+                href={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001'}/rss/articles.xml`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl"
+              >
+                <Rss className="h-5 w-5 mr-2" />
+                Subscribe to RSS Feed
+              </a>
+            </div>
+            
+            {/* RSS Feed Options */}
+            <div className="mt-6 text-left max-w-4xl mx-auto">
+              <h3 className="text-lg font-semibold text-gray-800 mb-3">Available RSS Feeds:</h3>
+              <div className="grid md:grid-cols-3 gap-4 text-sm">
+                <div className="bg-white bg-opacity-50 p-4 rounded-lg">
+                  <h4 className="font-medium text-gray-800 mb-2">All Articles</h4>
+                  <code className="text-xs bg-gray-100 px-2 py-1 rounded block mb-2">
+                    /rss/articles.xml
+                  </code>
+                  <p className="text-gray-600">Latest articles from all users</p>
+                </div>
+                <div className="bg-white bg-opacity-50 p-4 rounded-lg">
+                  <h4 className="font-medium text-gray-800 mb-2">By User</h4>
+                  <code className="text-xs bg-gray-100 px-2 py-1 rounded block mb-2">
+                    /rss/user/[user_id]/articles.xml
+                  </code>
+                  <p className="text-gray-600">Articles from a specific user</p>
+                </div>
+                <div className="bg-white bg-opacity-50 p-4 rounded-lg">
+                  <h4 className="font-medium text-gray-800 mb-2">By Tag</h4>
+                  <code className="text-xs bg-gray-100 px-2 py-1 rounded block mb-2">
+                    /rss/tag/[tag]/articles.xml
+                  </code>
+                  <p className="text-gray-600">Articles with specific tags</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

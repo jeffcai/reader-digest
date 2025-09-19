@@ -18,6 +18,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Reader Digest - Track Your Reading Journey",
   description: "Keep track of what you read and create weekly digests of your reading journey",
+  other: {
+    'application/rss+xml': `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001'}/rss/articles.xml`,
+  },
 };
 
 export default function RootLayout({
@@ -27,6 +30,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link 
+          rel="alternate" 
+          type="application/rss+xml" 
+          title="Reader Digest - Public Articles" 
+          href={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001'}/rss/articles.xml`}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50`}
       >
