@@ -201,7 +201,6 @@ Import trace for requested module:
 
 ## future functions
 
-- support pagination for both public articles and digests
 - user can view AI summary information which by default with local ollama OpenAI API compatible services, but user can bring their their own OpenAPI compatible service by providing API token, URL and model information
 - super admin (user with admin role) can manage all contents including articles and digests
 - user can have chrome extension to add articles with notes input
