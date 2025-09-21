@@ -198,6 +198,9 @@ Import trace for requested module:
 - prompts:
   - continue working on reader digest, to support using rss to subscribe public articles
 
+- git log: support backup by exporting user own articles and digests in admin console
+- prompts:
+  - continue working on reader digest, to support backup by exporting user own articles and digests in admin console 
 
 ## future functions
 
