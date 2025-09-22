@@ -200,7 +200,11 @@ Import trace for requested module:
 
 - git log: support backup by exporting user own articles and digests in admin console
 - prompts:
-  - continue working on reader digest, to support backup by exporting user own articles and digests in admin console 
+  - continue working on reader digest, to support backup by exporting user own articles and digests in admin console
+
+- git log: support deploying it in ali cloud
+- prompts:
+  - configure frontend to call backend service remotely (via API or domain or need reverse proxy?), it will start backend and frontend in terminal, and then configure ecs security group rule to configure 3000/3000 port traffic
 
 ## future functions
 

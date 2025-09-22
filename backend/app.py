@@ -32,12 +32,14 @@ def create_app():
     from routes.digests import digests_bp
     from routes.users import users_bp
     from routes.rss import rss_bp
+    from routes.export import export_bp
     
     app.register_blueprint(auth_bp, url_prefix='/api/v1/auth')
     app.register_blueprint(articles_bp, url_prefix='/api/v1/articles')
     app.register_blueprint(digests_bp, url_prefix='/api/v1/digests')
     app.register_blueprint(users_bp, url_prefix='/api/v1/users')
     app.register_blueprint(rss_bp, url_prefix='/rss')
+    app.register_blueprint(export_bp, url_prefix='/api/v1')
     
     # Add health check route
     @app.route('/health')

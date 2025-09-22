@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
-import { PlusIcon, PencilIcon, TrashIcon, EyeIcon } from 'lucide-react';
-import { articlesAPI } from '@/lib/api';
+import { PlusIcon, PencilIcon, TrashIcon, EyeIcon, DownloadIcon } from 'lucide-react';
+import { articlesAPI, exportAPI } from '@/lib/api';
 import Pagination from '@/components/Pagination';
 import Cookies from 'js-cookie';
 
@@ -26,6 +26,7 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isExporting, setIsExporting] = useState(false);
   const [pagination, setPagination] = useState({
     page: 1,
     per_page: 10,
@@ -106,6 +107,36 @@ export default function AdminPage() {
       hour: '2-digit',
       minute: '2-digit'
     });
+  };
+
+  const handleExportData = async () => {
+    setIsExporting(true);
+    try {
+      const blob = await exportAPI.exportUserData();
+      
+      // Create a link and trigger the download
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      
+      // Create filename with timestamp
+      const timestamp = new Date().toISOString().split('T')[0];
+      a.download = `reader-digest-backup-${timestamp}.json.gz`;
+      
+      document.body.appendChild(a);
+      a.click();
+      
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      alert('Your data has been exported successfully!');
+    } catch (error) {
+      console.error('Export failed:', error);
+      alert('Failed to export your data. Please try again.');
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   if (authLoading || !user) {
@@ -373,6 +404,22 @@ export default function AdminPage() {
               <p className="text-sm text-gray-500">See how others view your articles</p>
             </div>
           </Link>
+          
+          <button
+            onClick={handleExportData}
+            disabled={isExporting}
+            className="flex items-center p-4 border border-gray-200 rounded-lg hover:border-orange-300 hover:shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <DownloadIcon className="h-8 w-8 text-orange-600 mr-3" />
+            <div>
+              <p className="font-medium text-gray-900">
+                {isExporting ? 'Exporting...' : 'Export My Data'}
+              </p>
+              <p className="text-sm text-gray-500">
+                {isExporting ? 'Please wait...' : 'Download your articles and digests'}
+              </p>
+            </div>
+          </button>
         </div>
       </div>
     </div>

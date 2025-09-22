@@ -200,4 +200,27 @@ export const usersAPI = {
   deactivateAccount: () => api.post('/users/deactivate'),
 };
 
+// Export API
+export const exportAPI = {
+  exportUserData: async () => {
+    const token = Cookies.get('access_token');
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/api/v1/admin/export`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to export user data');
+    }
+
+    return response.blob();
+  },
+};
+
 export default api;
