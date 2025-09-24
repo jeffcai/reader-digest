@@ -328,6 +328,35 @@ Failed to compile.
 info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
 ```
 
+- git log: troubleshooting for running in server for frontend
+- prompts:
+  - why still show compiling when run it through 'nohup npm run dev &'
+```
+ ✓ Starting...
+ ✓ Ready in 4s
+ ○ Compiling /admin/articles/new ...
+ ✓ Compiled / in 29.1s (2390 modules)
+ GET / 200 in 29077ms
+ GET /admin/articles/new 200 in 5822ms
+ ⚠ Cross origin request detected from 106.15.54.73 to /_next/* resource. In a future major version of Next.js, you will need to explicitly configure "allowedDevOrigins" in next.config to allow this.
+Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+ ○ Compiling /favicon.ico ...
+ ✓ Compiled /favicon.ico in 1310ms (1328 modules)
+ GET /favicon.ico 200 in 1628ms
+ ○ Compiling /admin ...
+ ✓ Compiled /admin in 3.2s (2395 modules)
+ GET /admin 200 in 3930ms
+ GET /admin 200 in 123ms
+ ○ Compiling /public/articles ...
+ ✓ Compiled /public/articles in 1888ms (2436 modules)
+ GET /public/articles 200 in 2135ms
+ ✓ Compiled / in 477ms (1348 modules)
+ GET / 200 in 625ms
+ GET /public/articles 200 in 44ms
+ ○ Compiling /public/digests ...
+```
+  - how to name .env file when npm start to make sure it reads correct file?
+
 ## future functions
 
 - user can view AI summary information which by default with local ollama OpenAI API compatible services, but user can bring their their own OpenAPI compatible service by providing API token, URL and model information
