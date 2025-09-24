@@ -109,7 +109,7 @@ export default function NewArticlePage() {
       });
 
       if (response.ok) {
-        const result = await response.json();
+        await response.json();
         router.push('/admin');
       } else {
         const errorData = await response.json();
@@ -138,7 +138,7 @@ export default function NewArticlePage() {
         </div>
         <h1 className="text-3xl font-bold text-gray-900 mt-4">Add New Article</h1>
         <p className="text-gray-600 mt-2">
-          Share what you've read and add your thoughts and notes.
+          Share what you&apos;ve read and add your thoughts and notes.
         </p>
       </div>
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -38,19 +38,7 @@ export default function AdminPage() {
   const { user, isLoading: authLoading } = useAuth();
   const router = useRouter();
 
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.push('/login');
-    }
-  }, [user, authLoading, router]);
-
-  useEffect(() => {
-    if (user) {
-      fetchUserArticles();
-    }
-  }, [user, currentPage]);
-
-  const fetchUserArticles = async () => {
+  const fetchUserArticles = useCallback(async () => {
     try {
       setLoading(true);
       const response = await articlesAPI.getArticles({
@@ -67,7 +55,19 @@ export default function AdminPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage]);
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push('/login');
+    }
+  }, [user, authLoading, router]);
+
+  useEffect(() => {
+    if (user) {
+      fetchUserArticles();
+    }
+  }, [user, fetchUserArticles]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -244,7 +244,7 @@ export default function AdminPage() {
           </div>
         ) : articles.length === 0 ? (
           <div className="p-8 text-center">
-            <p className="text-gray-500 mb-4">You haven't created any articles yet.</p>
+            <p className="text-gray-500 mb-4">You haven&apos;t created any articles yet.</p>
             <Link
               href="/admin/articles/new"
               className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"

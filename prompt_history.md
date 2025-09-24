@@ -216,6 +216,117 @@ Import trace for requested module:
 - prompts:
   - frontend hangup, logs shows 'Compiling /admin/articles/new ...', any way to address it when running in Ali Cloud ECS server?  
   - can avoid compiling dynamically?
+  - fix issues of npm build
+
+- git log: troubleshooting for npm build
+- prompts:
+  - when running 'npm run build', it complains 
+```
+Failed to compile.
+
+./src/app/admin/articles/[id]/edit/page.tsx
+65:6  Warning: React Hook useEffect has a missing dependency: 'loadArticle'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+173:15  Warning: 'result' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/admin/articles/new/page.tsx
+112:15  Warning: 'result' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+141:25  Error: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+
+./src/app/admin/digests/[id]/edit/page.tsx
+69:6  Warning: React Hook useEffect has a missing dependency: 'loadDigest'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/app/admin/digests/[id]/page.tsx
+51:6  Warning: React Hook useEffect has a missing dependency: 'loadDigest'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/app/admin/digests/page.tsx
+11:9  Warning: 'router' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+22:6  Warning: React Hook useEffect has a missing dependency: 'loadDigests'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+37:21  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+53:21  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+169:68  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/app/admin/page.tsx
+51:6  Warning: React Hook useEffect has a missing dependency: 'fetchUserArticles'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+247:56  Error: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+
+./src/app/articles/[id]/page.tsx
+8:64  Warning: 'Copy' is defined but never used.  @typescript-eslint/no-unused-vars
+15:9  Warning: 'router' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+38:6  Warning: React Hook useEffect has a missing dependency: 'fetchArticle'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+48:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+73:16  Warning: 'err' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/digests/[id]/page.tsx
+4:10  Warning: 'useParams' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/digests/page.tsx
+34:6  Warning: React Hook useEffect has a missing dependency: 'loadDigests'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+58:21  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/app/login/page.tsx
+76:21  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+231:18  Error: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+
+./src/app/page.tsx
+52:45  Error: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+
+./src/app/profile/page.tsx
+3:10  Warning: 'useState' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/public/articles/page.tsx
+43:6  Warning: React Hook useEffect has missing dependencies: 'filters' and 'handleFilterChange'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+47:6  Warning: React Hook useEffect has a missing dependency: 'fetchArticles'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+255:29  Error: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+255:46  Error: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+259:90  Error: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+259:107  Error: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+270:43  Error: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+
+./src/app/public/digests/page.tsx
+25:6  Warning: React Hook useEffect has a missing dependency: 'loadPublicDigests'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/app/register/page.tsx
+174:21  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/DigestReviewEditor.tsx
+18:10  Warning: 'isPublished' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+18:23  Warning: 'setIsPublished' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+52:21  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/HealthCheck.tsx
+21:16  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/MarkdownRenderer.tsx
+23:18  Warning: 'node' is defined but never used.  @typescript-eslint/no-unused-vars
+23:80  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/Navbar.tsx
+14:25  Warning: 'isLoading' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/UrlPreviewCard.tsx
+20:19  Warning: 'setPreview' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+28:6  Warning: React Hook useEffect has a missing dependency: 'fetchUrlPreview'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+38:13  Warning: 'previewData' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+39:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+111:15  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+131:11  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./src/components/WeeklyDigestGenerator.tsx
+61:26  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+79:21  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+270:61  Error: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+
+./src/contexts/AuthContext.tsx
+11:96  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+18:43  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+48:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+105:16  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/lib/utils.ts
+148:40  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
+```
 
 ## future functions
 
