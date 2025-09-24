@@ -206,6 +206,12 @@ Import trace for requested module:
 - prompts:
   - configure frontend to call backend service remotely (via API or domain or need reverse proxy?), it will start backend and frontend in terminal, and then configure ecs security group rule to configure 3000/3000 port traffic
 
+- git log: troubleshooting for enabling remote access by running flask
+- prompts:
+  - run 'python app.py' in ali cloud, and add security rule in security group, but remotely still can not access the backend service, which return '(failed)net::ERR_EMPTY_RESPONSE'
+  - add waitress in requirements.txt for dependency
+  - add waitress in requirements.txt for dependency, just add waitress related dependency.
+
 ## future functions
 
 - user can view AI summary information which by default with local ollama OpenAI API compatible services, but user can bring their their own OpenAPI compatible service by providing API token, URL and model information
