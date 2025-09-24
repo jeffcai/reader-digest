@@ -212,6 +212,11 @@ Import trace for requested module:
   - add waitress in requirements.txt for dependency
   - add waitress in requirements.txt for dependency, just add waitress related dependency.
 
+- git log: troubleshooting for enabling remote access by running npm
+- prompts:
+  - frontend hangup, logs shows 'Compiling /admin/articles/new ...', any way to address it when running in Ali Cloud ECS server?  
+  - can avoid compiling dynamically?
+
 ## future functions
 
 - user can view AI summary information which by default with local ollama OpenAI API compatible services, but user can bring their their own OpenAPI compatible service by providing API token, URL and model information

@@ -5,7 +5,9 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { ArrowLeftIcon } from 'lucide-react';
 import Link from 'next/link';
-import MarkdownEditor from '@/components/MarkdownEditor';
+import dynamic from 'next/dynamic';
+
+const MarkdownEditor = dynamic(() => import('@/components/MarkdownEditor'), { ssr: false });
 
 interface ArticleFormData {
   title: string;
