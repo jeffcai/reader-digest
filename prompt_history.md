@@ -357,8 +357,13 @@ Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allow
 ```
   - how to name .env file when npm start to make sure it reads correct file?
 
+- git log: 
+- prompts:
+
 ## future functions
 
+- support vote article, and sort articles per number of votes
+- rss subscription support top 10 articles daily
 - user can view AI summary information which by default with local ollama OpenAI API compatible services, but user can bring their their own OpenAPI compatible service by providing API token, URL and model information
 - super admin (user with admin role) can manage all contents including articles and digests
 - user can have chrome extension to add articles with notes input
