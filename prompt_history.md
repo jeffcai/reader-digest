@@ -357,8 +357,21 @@ Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allow
 ```
   - how to name .env file when npm start to make sure it reads correct file?
 
+- prompts:
+ - how to resolve the issue: after running 'nohup npm run start > out.log 2>&1 &' in Ali Cloud ECS for some time like 1 hour, the frontend is somehow down.
+ - how to stop using pm2?
+
+- git log: support social login integration with Github and Google
+- prompts:
+  - if is there any free SaaS service for enabling social login like integration with Github or Google?
+  - choose to use Logto (Community Cloud), start the integration 
+
+
+### template for git log and prompts
+
 - git log: 
 - prompts:
+  - 
 
 ## future functions
 
@@ -369,7 +382,6 @@ Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allow
 - user can have chrome extension to add articles with notes input
 - UX design and user experience not very consistent across different modules
 
-
 nice to have - if worthing doing?
 - can add good food/restaurant collections per others' recommendation as life is important part along with reading/digests - thoughts
 - can add good book review
@@ -378,9 +390,22 @@ nice to have - if worthing doing?
 prompts: continue working on it, to implement ...
 - user registration with social login like google, consider using logto (https://logto.io/)
 
-
 ## AI Agent useful scripts
 
+- 
+```
+pm2 stop reader-digest
+
+pm2 stop all
+```
+- pm2 running for long-running process
+```
+npm install -g pm2
+pm2 start npm --name reader-digest -- run start
+pm2 logs reader-digest
+pm2 save                       # persist list
+pm2 startup systemd            # generate systemd integration
+```
 - lsof -ti:5001 | xargs kill -9 (kill any existing process on port 5001)
 - curl -s -X POST http://localhost:5001/api/v1/auth/login -H "Content-Type: application/json" -d '{"login": "admin", "password": "Admin123!"}'
 - sqlite3 reader_digest.db "SELECT * FROM users;"

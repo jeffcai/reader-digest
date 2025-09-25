@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { AuthProvider } from "@/contexts/AuthContext";
+import { AppProviders } from "@/providers/AppProviders";
 import ClientNavbar from "@/components/ClientNavbar";
 import HealthCheck from "@/components/HealthCheck";
 
@@ -41,7 +41,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50`}
       >
-        <AuthProvider>
+        <AppProviders>
           <div className="min-h-screen flex flex-col">
             <ClientNavbar />
             <main className="flex-1">
@@ -49,7 +49,7 @@ export default function RootLayout({
             </main>
             <HealthCheck />
           </div>
-        </AuthProvider>
+        </AppProviders>
       </body>
     </html>
   );
