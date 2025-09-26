@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
+import { LogtoSignInButton } from '@/components/auth/LogtoSignInButton';
 
 interface FormData {
   login: string;
@@ -106,7 +107,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+  <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {validationErrors.general && (
             <div className="bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded">
               {validationErrors.general}
@@ -200,7 +201,7 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <div>
+          <div className="space-y-4">
             <button
               type="submit"
               disabled={isLoading}
@@ -224,6 +225,17 @@ export default function LoginPage() {
               </span>
               {isLoading ? 'Signing in...' : 'Sign in'}
             </button>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="bg-gray-50 px-2 text-gray-500">Or</span>
+              </div>
+            </div>
+
+            <LogtoSignInButton redirectTo="/admin" />
           </div>
 
           <div className="text-center">

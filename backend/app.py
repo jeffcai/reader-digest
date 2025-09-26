@@ -2,30 +2,41 @@ from flask import Flask
 from flask_cors import CORS
 from dotenv import load_dotenv
 import os
-from datetime import timedelta
+from datetime import timedelta, datetime
+import time
 from database import db, jwt, login_manager
 
 # Load environment variables
 load_dotenv()
 
+def log(msg: str):
+    print(f"[{datetime.utcnow().isoformat()}] {msg}", flush=True)
+
+
 def create_app():
+    start = time.time()
+    log("create_app() start")
     app = Flask(__name__)
-    
+    log("Flask instance created")
+
     # Configuration
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-key')
     app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'dev-jwt-secret')
     app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=1)  # 1 day expiration
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///reader_digest.db')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    
+    log("Configuration loaded")
+
     # Initialize extensions with app
     db.init_app(app)
     jwt.init_app(app)
     login_manager.init_app(app)
-    
+    log("Extensions initialized")
+
     # Enable CORS
-    CORS(app, origins=["http://localhost:3000", "http://localhost:3001", "http://106.15.54.73:3000"])  # Allow frontend origins
-    
+    CORS(app, origins=["http://localhost:3000", "http://localhost:3001", "http://106.15.54.73:3000"])
+    log("CORS enabled")
+
     # Import and register blueprints
     from routes.auth import auth_bp
     from routes.articles import articles_bp
@@ -33,29 +44,42 @@ def create_app():
     from routes.users import users_bp
     from routes.rss import rss_bp
     from routes.export import export_bp
-    
+    log("Blueprint modules imported")
+
     app.register_blueprint(auth_bp, url_prefix='/api/v1/auth')
     app.register_blueprint(articles_bp, url_prefix='/api/v1/articles')
     app.register_blueprint(digests_bp, url_prefix='/api/v1/digests')
     app.register_blueprint(users_bp, url_prefix='/api/v1/users')
     app.register_blueprint(rss_bp, url_prefix='/rss')
     app.register_blueprint(export_bp, url_prefix='/api/v1')
-    
+    log("Blueprints registered")
+
     # Add health check route
     @app.route('/health')
     def health_check():
         return {'status': 'OK', 'message': 'Flask app is running'}
-    
+    log("Health route added")
+
     # Import models to ensure they are registered with SQLAlchemy
-    from models.models import User, Article, Digest
-    
+    from models.models import User, Article, Digest  # noqa: F401
+    log("Models imported")
+
     # Create tables
     with app.app_context():
         db.create_all()
-    
+        log("Database tables ensured")
+
+    log(f"create_app() complete in {time.time() - start:.2f}s")
     return app
 
 if __name__ == '__main__':
+    log("Starting application via __main__")
     app = create_app()
+    log("Flask app created; launching Waitress")
     from waitress import serve
-    serve(app, host='0.0.0.0', port=5001)
+    log("Waitress starting on http://0.0.0.0:5001")
+    try:
+        serve(app, host='0.0.0.0', port=5001)
+    except OSError as e:
+        log(f"Waitress failed to bind: {e}")
+        raise
