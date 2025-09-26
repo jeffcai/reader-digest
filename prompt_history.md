@@ -366,6 +366,28 @@ Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allow
   - if is there any free SaaS service for enabling social login like integration with Github or Google?
   - choose to use Logto (Community Cloud), start the integration 
 
+- git log: continue working on social login integration with Github and Google
+- prompts:
+  -    Creating an optimized production build ...
+```
+Failed to compile.
+
+./src/providers/AppProviders.tsx
+Module not found: Package path ./client is not exported from package reader-digest/frontend/node_modules/@logto/next (see exports field in reader-digest/frontend/node_modules/@logto/next/package.json)
+
+https://nextjs.org/docs/messages/module-not-found
+
+./src/lib/logto/server.ts
+Module not found: Package path ./server is not exported from package reader-digest/frontend/node_modules/@logto/next (see exports field in reader-digest/frontend/node_modules/@logto/next/package.json)
+
+https://nextjs.org/docs/messages/module-not-found
+
+Import trace for requested module:
+./src/app/api/auth/[logto]/route.ts
+```
+  - failed to run 'python3 app.py' to start backend, no response
+
+
 
 ### template for git log and prompts
 
