@@ -179,3 +179,6 @@ cython_debug/
 .cursorignore
 .cursorindexingignore
 backend/database.db
+.DS_Store
+backend/reader_digest.db
+backend/reader_digest copy.db
