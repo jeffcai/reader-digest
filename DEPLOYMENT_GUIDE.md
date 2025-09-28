@@ -110,6 +110,48 @@ nano .env  # Configure your environment variables
 python3 database.py
 ```
 
+#### 🇨🇳 Optional: Faster Python installs in mainland China (pip mirrors)
+
+If your ECS is in mainland China, configure a PyPI mirror to speed up `pip install` before running the dependency install step.
+
+- One-time (recommended if you don't want persistent changes):
+
+```bash
+# Inside the activated venv
+pip install -r requirements.txt \
+        -i https://mirrors.aliyun.com/pypi/simple/ \
+        --trusted-host mirrors.aliyun.com
+```
+
+- Alternatives (choose one):
+        - Tsinghua: `-i https://pypi.tuna.tsinghua.edu.cn/simple/` with `--trusted-host pypi.tuna.tsinghua.edu.cn`
+        - USTC: `-i https://pypi.mirrors.ustc.edu.cn/simple/` with `--trusted-host pypi.mirrors.ustc.edu.cn`
+        - Douban: `-i https://pypi.doubanio.com/simple/` with `--trusted-host pypi.doubanio.com`
+
+- Persistent (per-user) using pip config:
+
+```bash
+# Affects current user; works both inside and outside venvs
+pip config set global.index-url https://mirrors.aliyun.com/pypi/simple
+pip config set global.trusted-host mirrors.aliyun.com
+pip config set global.timeout 120
+```
+
+- Persistent (manual config file):
+
+```bash
+mkdir -p ~/.pip
+cat > ~/.pip/pip.conf << 'EOF'
+[global]
+index-url = https://mirrors.aliyun.com/pypi/simple
+extra-index-url = https://pypi.org/simple
+trusted-host = mirrors.aliyun.com
+timeout = 120
+EOF
+```
+
+Tip: If you prefer Tsinghua, replace the URL with `https://pypi.tuna.tsinghua.edu.cn/simple` and update `trusted-host` accordingly.
+
 ### Step 4: Frontend Setup
 
 ```bash
