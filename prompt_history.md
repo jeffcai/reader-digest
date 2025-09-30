@@ -387,13 +387,16 @@ Import trace for requested module:
 ```
   - failed to run 'python3 app.py' to start backend, no response
 
-
+- git log: support back to admin dashboard when signin from logto
+- prompts:
+  - continue working on reader digest, to support back to reader digest admin dashboard when login from logto, which also means need add a new account if it not exists yet in reader digest (inspect response to retrieve user information so that can create a new account, or any other better way)
+  - what's LOGTO_EXCHANGE_SECRET? if need get it from logto admin console?
 
 ### template for git log and prompts
 
 - git log: 
 - prompts:
-  - 
+  - continue working on reader digest, to support
 
 ## future functions
 

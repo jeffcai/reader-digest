@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Reader Digest Frontend
 
-## Getting Started
+Next.js 15 App Router frontend for the Reader Digest admin and reader experience.
 
-First, run the development server:
+---
+
+## Prerequisites
+
+- Node.js 18+
+- npm 9+ (ships with Node 18)
+- Running Reader Digest backend API (`http://localhost:5001` by default)
+
+---
+
+## Setup
+
+```bash
+cd frontend
+npm install
+```
+
+Create `.env.local` based on the template below. All Logto values come from the Logto Cloud console; see `../LOGTO_INTEGRATION.md` for the full walk-through.
+
+```bash
+NEXT_PUBLIC_API_URL=http://localhost:5001
+
+LOGTO_ENDPOINT=https://your-tenant.logto.app
+LOGTO_APP_ID=your-logto-app-id
+LOGTO_APP_SECRET=your-logto-app-secret
+LOGTO_BASE_URL=http://localhost:3000
+LOGTO_SCOPES=openid profile email offline_access
+LOGTO_COOKIE_SECRET=replace-with-long-random-string
+LOGTO_COOKIE_SECURE=false
+
+LOGTO_BACKEND_SECRET=shared-secret-used-by-backend
+LOGTO_BACKEND_API_URL=http://localhost:5001
+
+NEXT_PUBLIC_LOGTO_ENDPOINT=$LOGTO_ENDPOINT
+NEXT_PUBLIC_LOGTO_APP_ID=$LOGTO_APP_ID
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+```
+
+> The `LOGTO_BACKEND_SECRET` value **must** match the `LOGTO_EXCHANGE_SECRET` inside `backend/.env`. The Next.js Logto callback route sends it to the Flask API to mint the Reader Digest JWT.
+
+---
+
+## Development
+
+Start the local dev server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The app runs at [http://localhost:3000](http://localhost:3000). Logto redirects back to `/admin` after login; ensure the backend is running on port `5001` so the login exchange succeeds.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Available Scripts
 
-## Learn More
+- `npm run dev` – Start the development server.
+- `npm run build` – Create a production build.
+- `npm run lint` – Run ESLint over the project.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Authentication Flow Summary
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. User clicks **Sign in with Logto**.
+2. The API route `/api/auth/logto/sign-in` kicks off the Logto OIDC flow and stores the desired redirect.
+3. After successful authentication, `/api/auth/logto/sign-in-callback` fetches the Logto claims and exchanges them with the backend.
+4. The backend (`/api/v1/auth/logto/exchange`) upserts the account and returns a Reader Digest JWT.
+5. The frontend stores that JWT in the `access_token` cookie so existing admin screens continue to function.
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+See `../LOGTO_INTEGRATION.md` for troubleshooting tips and production considerations.

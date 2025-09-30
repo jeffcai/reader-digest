@@ -7,7 +7,7 @@ A full-stack web application for tracking your reading journey, taking notes, an
 - **Article Management**: Post articles you've read with notes and tags
 - **Multiple View Modes**: List, card, and magazine views for articles
 - **Weekly Digests**: Automatically generate weekly summaries of your reading
-- **User Authentication**: Support for both regular registration and social login
+- **User Authentication**: Local accounts plus Logto-powered social login (Google, GitHub, etc.)
 - **Public & Private Content**: Share articles publicly or keep them private
 - **Responsive Design**: Works on desktop and mobile devices
 
@@ -168,11 +168,31 @@ DATABASE_URL=sqlite:///reader_digest.db
 # OAuth Settings (optional)
 GOOGLE_CLIENT_ID=your-google-client-id
 GOOGLE_CLIENT_SECRET=your-google-client-secret
+GITHUB_CLIENT_ID=your-github-client-id
+GITHUB_CLIENT_SECRET=your-github-client-secret
+
+# Logto secure exchange shared secret
+LOGTO_EXCHANGE_SECRET=copy-the-same-value-as-frontend-LOGTO_BACKEND_SECRET
 ```
 
 ### Frontend (.env.local)
 ```
-NEXT_PUBLIC_API_URL=http://localhost:5000
+NEXT_PUBLIC_API_URL=http://localhost:5001
+
+LOGTO_ENDPOINT=https://your-tenant.logto.app
+LOGTO_APP_ID=your-logto-app-id
+LOGTO_APP_SECRET=your-logto-app-secret
+LOGTO_BASE_URL=http://localhost:3000
+LOGTO_SCOPES=openid profile email offline_access
+LOGTO_COOKIE_SECRET=replace-with-long-random-string
+LOGTO_COOKIE_SECURE=false
+
+LOGTO_BACKEND_SECRET=choose-a-long-random-string
+LOGTO_BACKEND_API_URL=http://localhost:5001
+
+NEXT_PUBLIC_LOGTO_ENDPOINT=$LOGTO_ENDPOINT
+NEXT_PUBLIC_LOGTO_APP_ID=$LOGTO_APP_ID
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
 
 ## Usage
@@ -185,6 +205,8 @@ NEXT_PUBLIC_API_URL=http://localhost:5000
 5. **Weekly Digests**: Generate and publish weekly reading summaries
 
 ### For Admin Users
+- Log in via Logto (Google, GitHub, etc.) or a local admin account
+- After successful Logto login you're redirected to `/admin` with a Reader Digest session
 - Access admin panel to manage articles and digests
 - Create and edit weekly digests
 - Manage privacy settings for content

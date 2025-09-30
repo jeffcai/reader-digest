@@ -6,6 +6,7 @@ from werkzeug.security import check_password_hash
 from utils.validators import validate_password, validate_email, validate_username
 import requests
 import os
+import re
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -141,6 +142,98 @@ def google_oauth():
             'user': user.to_dict()
         }), 200
         
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+
+def _generate_unique_username(base_username: str) -> str:
+    """Generate a unique username based on preferred base."""
+    base = re.sub(r'[^a-zA-Z0-9_]', '_', base_username.strip()) or 'reader'
+    candidate = base.lower()
+    suffix = 1
+
+    while User.query.filter_by(username=candidate).first() is not None:
+        candidate = f"{base.lower()}_{suffix}"
+        suffix += 1
+
+    return candidate
+
+
+@auth_bp.route('/logto/exchange', methods=['POST'])
+def logto_exchange():
+    """Exchange a Logto session for a Reader Digest JWT, creating user if needed."""
+    secret_header = request.headers.get('X-Logto-Exchange-Secret')
+    expected_secret = os.getenv('LOGTO_EXCHANGE_SECRET')
+
+    if not expected_secret:
+        return jsonify({'error': 'Server misconfiguration: LOGTO_EXCHANGE_SECRET not set'}), 500
+
+    if secret_header != expected_secret:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    data = request.get_json(silent=True) or {}
+    logto_id = data.get('logto_id')
+    email = data.get('email')
+    display_name = data.get('display_name')
+    first_name = data.get('first_name')
+    last_name = data.get('last_name')
+
+    if not logto_id or not email:
+        return jsonify({'error': 'logto_id and email are required'}), 400
+
+    try:
+        user = User.query.filter_by(oauth_provider='logto', oauth_id=logto_id).first()
+
+        if not user:
+            user = User.query.filter_by(email=email).first()
+
+        if not user:
+            preferred_username = data.get('username') or (email.split('@')[0] if '@' in email else display_name)
+            username = _generate_unique_username(preferred_username or 'reader')
+
+            user = User()
+            user.username = username
+            user.email = email
+            user.first_name = first_name or ''
+            user.last_name = last_name or ''
+            user.oauth_provider = 'logto'
+            user.oauth_id = logto_id
+            db.session.add(user)
+            db.session.commit()
+        else:
+            # Update existing user details if necessary
+            updated = False
+            if not user.oauth_provider:
+                user.oauth_provider = 'logto'
+                user.oauth_id = logto_id
+                updated = True
+            if first_name and user.first_name != first_name:
+                user.first_name = first_name
+                updated = True
+            if last_name and user.last_name != last_name:
+                user.last_name = last_name
+                updated = True
+            if display_name and not user.first_name and not user.last_name:
+                parts = display_name.split(' ', 1)
+                user.first_name = parts[0]
+                if len(parts) > 1:
+                    user.last_name = parts[1]
+                updated = True
+
+            if updated:
+                db.session.commit()
+
+        if not user.is_active:
+            return jsonify({'error': 'Account is disabled'}), 403
+
+        access_token = create_access_token(identity=str(user.id))
+
+        return jsonify({
+            'access_token': access_token,
+            'user': user.to_dict()
+        }), 200
+
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
