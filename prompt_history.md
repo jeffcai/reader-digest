@@ -396,6 +396,13 @@ Import trace for requested module:
 - prompts:
   - continue working on reader digest, to fix the bug of showing my digests for login user's only instead of all
 
+ TODO
+ 
+- git log: fix the bug - failed to delete any digest
+- prompts:
+  - continue working on reader digest, to fix the bug - failed to delete any digest, caused by 403 error when calling backend API
+
+
 ### template for git log and prompts
 
 - git log: 
