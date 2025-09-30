@@ -392,6 +392,10 @@ Import trace for requested module:
   - continue working on reader digest, to support back to reader digest admin dashboard when login from logto, which also means need add a new account if it not exists yet in reader digest (inspect response to retrieve user information so that can create a new account, or any other better way)
   - what's LOGTO_EXCHANGE_SECRET? if need get it from logto admin console?
 
+- git log: fix the bug of showing my digests for login user's only instead of all
+- prompts:
+  - continue working on reader digest, to fix the bug of showing my digests for login user's only instead of all
+
 ### template for git log and prompts
 
 - git log: 

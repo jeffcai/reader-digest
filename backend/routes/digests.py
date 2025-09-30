@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_request
 from models.models import Digest, User
 from database import db
 from datetime import datetime, timedelta
@@ -12,23 +12,27 @@ digests_bp = Blueprint('digests', __name__)
 def get_digests():
     """Get all published public digests or user's own digests"""
     try:
-        # Check if user is authenticated
-        user_id = None
-        try:
-            user_id = get_jwt_identity()
-        except:
-            pass  # Not authenticated, show only public published digests
-        
         # Query parameters
         page = request.args.get('page', 1, type=int)
         per_page = request.args.get('per_page', 10, type=int)
         user_filter = request.args.get('user_id', type=int)
         view_type = request.args.get('view', 'public')  # 'public' or 'own'
+
+        # Attempt to resolve the current user (optional for public view)
+        user_id = None
+        try:
+            verify_jwt_in_request(optional=True)
+            user_id = get_jwt_identity()
+        except Exception:
+            if view_type == 'own':
+                return jsonify({'error': 'Authentication required to view personal digests'}), 401
         
         # Base query
         query = Digest.query
         
-        if view_type == 'own' and user_id:
+        if view_type == 'own':
+            if not user_id:
+                return jsonify({'error': 'Authentication required to view personal digests'}), 401
             # User's own digests (including unpublished ones)
             query = query.filter_by(user_id=user_id)
         else:
