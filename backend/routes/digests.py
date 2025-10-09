@@ -4,9 +4,19 @@ from models.models import Digest, User
 from database import db
 from datetime import datetime, timedelta
 from services.weekly_digest_service import WeeklyDigestService
+from typing import Optional
 import json
 
 digests_bp = Blueprint('digests', __name__)
+def _get_current_user_id() -> Optional[int]:
+    """Return the current JWT identity coerced to an int when possible."""
+    identity = get_jwt_identity()
+    if identity is None:
+        return None
+    try:
+        return int(identity)
+    except (TypeError, ValueError):
+        return None
 
 @digests_bp.route('', methods=['GET'])
 def get_digests():
@@ -22,7 +32,7 @@ def get_digests():
         user_id = None
         try:
             verify_jwt_in_request(optional=True)
-            user_id = get_jwt_identity()
+            user_id = _get_current_user_id()
         except Exception:
             if view_type == 'own':
                 return jsonify({'error': 'Authentication required to view personal digests'}), 401
@@ -73,7 +83,9 @@ def get_digests():
 def create_digest():
     """Create a new digest"""
     try:
-        user_id = get_jwt_identity()
+        user_id = _get_current_user_id()
+        if user_id is None:
+            return jsonify({'error': 'Invalid user identity'}), 401
         data = request.get_json()
         
         # Validate required fields
@@ -123,7 +135,7 @@ def get_digest(digest_id):
     try:
         user_id = None
         try:
-            user_id = get_jwt_identity()
+            user_id = _get_current_user_id()
         except:
             pass
         
@@ -150,14 +162,14 @@ def get_digest(digest_id):
 def update_digest(digest_id):
     """Update a digest"""
     try:
-        user_id = get_jwt_identity()
+        user_id = _get_current_user_id()
         digest = Digest.query.get(digest_id)
         
         if not digest:
             return jsonify({'error': 'Digest not found'}), 404
         
         # Check ownership
-        if digest.user_id != user_id:
+        if user_id is None or digest.user_id != user_id:
             return jsonify({'error': 'Access denied'}), 403
         
         data = request.get_json()
@@ -201,14 +213,14 @@ def update_digest(digest_id):
 def delete_digest(digest_id):
     """Delete a digest"""
     try:
-        user_id = get_jwt_identity()
+        user_id = _get_current_user_id()
         digest = Digest.query.get(digest_id)
         
         if not digest:
             return jsonify({'error': 'Digest not found'}), 404
         
         # Check ownership
-        if digest.user_id != user_id:
+        if user_id is None or digest.user_id != user_id:
             return jsonify({'error': 'Access denied'}), 403
         
         db.session.delete(digest)
@@ -225,7 +237,9 @@ def delete_digest(digest_id):
 def generate_weekly_digest():
     """Generate a weekly digest from user's articles using the template format"""
     try:
-        user_id = get_jwt_identity()
+        user_id = _get_current_user_id()
+        if user_id is None:
+            return jsonify({'error': 'Invalid user identity'}), 401
         data = request.get_json() or {}
         
         # Initialize the weekly digest service
@@ -256,7 +270,9 @@ def generate_weekly_digest():
 def get_available_weeks():
     """Get available weeks that have articles for the user"""
     try:
-        user_id = get_jwt_identity()
+        user_id = _get_current_user_id()
+        if user_id is None:
+            return jsonify({'error': 'Invalid user identity'}), 401
         limit = request.args.get('limit', 12, type=int)
         
         digest_service = WeeklyDigestService()
