@@ -400,6 +400,10 @@ Import trace for requested module:
 - prompts:
   - continue working on reader digest, to fix the bug - failed to delete any digest, caused by 403 error when calling backend API
 
+- git log: finish logto sign-in supporting Google
+- prompts:
+  - continue working on reader digest, to support logto sign-in supporting Google, which should require config logto to enable Google, advise it
+  - Added Google in the social sign-in config of logto console already, once Google login successful check if current code works with Google social login, e.g., create a new account if no account found and redirect user to admin dashboard
 
 ### template for git log and prompts
 
@@ -409,6 +413,7 @@ Import trace for requested module:
 
 ## future functions
 
+- finish logto sign-in supporting Google
 - support vote article, and sort articles per number of votes
 - rss subscription support top 10 articles daily
 - user can view AI summary information which by default with local ollama OpenAI API compatible services, but user can bring their their own OpenAPI compatible service by providing API token, URL and model information
