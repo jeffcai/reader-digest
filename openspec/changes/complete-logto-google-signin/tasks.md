@@ -1,0 +1,6 @@
+- [x] Add `LOGTO_EXCHANGE_SECRET` to backend `.env` and `frontend/.env.local` (User Action / Documentation). <!-- id: 0 -->
+- [x] Implement `POST /api/v1/auth/logto/exchange` endpoint in `backend/routes/auth.py`. <!-- id: 1 -->
+- [x] Update `User` model in `backend/models/models.py` if needed (verify `oauth_provider` field handles 'logto' or 'google'). <!-- id: 2 -->
+- [x] Implement token exchange logic in `frontend/src/app/api/auth/[logto]/route.ts`. <!-- id: 3 -->
+- [x] Verify `access_token` cookie is set correctly and `api.ts` can use it. <!-- id: 4 -->
+- [x] Test Google Sign-in flow end-to-end (Simulate or User Test). <!-- id: 5 -->

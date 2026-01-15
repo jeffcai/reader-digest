@@ -77,10 +77,47 @@ export async function GET(request: NextRequest) {
 				readCookieHeader(request),
 				request.url,
 			);
+
+            // Verify with backend and get access token
+            let accessToken = null;
+            try {
+                const context = await logtoClient.getLogtoContext(newCookie);
+                if (context.isAuthenticated && context.userInfo?.email) {
+                    const exchangeResponse = await fetch(`${process.env.LOGTO_BACKEND_API_URL || 'http://localhost:5001'}/api/v1/auth/logto/exchange`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            email: context.userInfo.email,
+                            sub: context.userInfo.sub,
+                            name: context.userInfo.name,
+                            secret: process.env.LOGTO_EXCHANGE_SECRET
+                        })
+                    });
+                    
+                    if (exchangeResponse.ok) {
+                        const data = await exchangeResponse.json();
+                        accessToken = data.access_token;
+                    } else {
+                        console.error('Token exchange failed:', await exchangeResponse.text());
+                    }
+                }
+            } catch (error) {
+                console.error('Token exchange error:', error);
+            }
+
 			const response = NextResponse.redirect(resolveRedirectDestination(request));
 			if (newCookie) {
 				applySessionCookie(response, newCookie);
 			}
+            
+            if (accessToken) {
+                response.cookies.set('access_token', accessToken, {
+                    httpOnly: false, // Allow client-side access for API calls
+                    path: '/',
+                    maxAge: 86400 // 1 day
+                });
+            }
+            
 			return response;
 		}
 
